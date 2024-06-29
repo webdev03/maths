@@ -32,7 +32,7 @@
 	const target = Math.floor(Math.random() * 100000)
 		.toString()
 		.padStart(5, '0');
-
+		
 	const submit = () => {
 		if(guess.length !== 5) return;
 		board[guesses] = board[guesses].map((_, i) => {
