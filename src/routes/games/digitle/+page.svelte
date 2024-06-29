@@ -78,6 +78,11 @@
 
 <Header size="h1">Digitle</Header>
 <p>Inspired by Hooda Math</p>
+
+<Header size="h2">How to play?</Header>
+<p>This game is similar to the popular word game called "Wordle". In this game, rather than using the alphabet to construct words, you use the digits 0-9 to find the missing number.</p>
+<p>If you have any suggestions, you can give us feedback on our GitHub repository by creating an issue.</p>
+
 <div class="w-min">
 	<div class="flex flex-col">
 		{#each board as row}
