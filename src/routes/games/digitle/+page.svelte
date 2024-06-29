@@ -33,12 +33,35 @@
 		.toString()
 		.padStart(5, '0');
 
+	const wordToMap = (word: string) => {
+		let map: {
+			[letter: string]: number;
+		} = {};
+		for (const letter of word.trim()) {
+			if (map?.[letter]) map[letter]++;
+			else map[letter] = 1;
+		}
+		return map;
+	};
+
 	const submit = () => {
-		if(guess.length !== 5) return;
+		if (guess.length !== 5) return;
 		board[guesses] = board[guesses].map((_, i) => {
+			let type: 'grey' | 'yellow' | 'green' = 'yellow';
+			if (guess[i] === target[i]) type = 'green';
+			else {
+				let targetMap = wordToMap(target);
+				let noLetters = targetMap[guess[i]] || 0;
+				if (noLetters === 0) type = 'grey';
+				else {
+					for (let a = 0; a < i; a++) if (target[a] === guess[a] && guess[a] === guess[i]) noLetters--;
+					if (noLetters > 0) type = 'yellow';
+					else type = 'grey';
+				}
+			}
 			return {
 				content: guess[i],
-				type: target.includes(guess[i]) ? (guess[i] === target[i] ? "green" as const : "yellow" as const) : "grey" as const
+				type
 			};
 		});
 		guesses++;
@@ -75,7 +98,6 @@
 			class="mr-2"
 			bind:value={guess}
 			on:keypress={(e) => {
-				console.log(e);
 				if (e.key === 'Enter') {
 					submit();
 				} else if (e.currentTarget.value.length > 4 || !'0123456789'.split('').includes(e.key)) {
