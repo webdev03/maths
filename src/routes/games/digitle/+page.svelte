@@ -3,13 +3,15 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 
+	type ColourOfCell = 'grey' | 'yellow' | 'green';
+
 	type Item =
 		| {
 				type: 'empty';
 				content: null;
 		  }
 		| {
-				type: 'grey' | 'yellow' | 'green';
+				type: ColourOfCell;
 				content: string;
 		  };
 
@@ -47,7 +49,7 @@
 	const submit = () => {
 		if (guess.length !== 5) return;
 		board[guesses] = board[guesses].map((_, i) => {
-			let type: 'grey' | 'yellow' | 'green' = 'yellow';
+			let type: ColourOfCell = 'yellow';
 			if (guess[i] === target[i]) type = 'green';
 			else {
 				let targetMap = wordToMap(target);
@@ -90,7 +92,7 @@
 			<div class="flex flex-row">
 				{#each row as cell, j}
 					<div
-						class={`text-white font-bold flex justify-center items-center ${j !== 0 ? 'ml-2' : ''} mb-3 w-12 h-12 rounded ${cell.type === 'green' ? 'bg-green-400' : cell.type === 'yellow' ? 'bg-yellow-400' : 'bg-slate-400'}`}
+						class={`text-white font-bold flex justify-center items-center ${j !== 0 ? 'ml-2' : ''} mb-3 w-12 h-12 rounded ${cell.type === 'green' ? 'bg-green-400' : cell.type === 'yellow' ? 'bg-yellow-400' : cell.type === "grey" ? 'bg-slate-400' : "bg-transparent border border-solid border-gray-400"}`}
 					>
 						{cell.content === null ? '' : cell.content}
 					</div>
