@@ -1,4 +1,6 @@
-<section class="mx-auto flex w-full flex-col items-center gap-2 py-6 md:py-12 md:pb-8 lg:py-24 lg:pb-20 pb-8">
+<section
+	class="mx-auto flex w-full flex-col items-center gap-2 py-6 md:py-12 md:pb-8 lg:py-24 lg:pb-20 pb-8"
+>
 	<h1
 		class="text-center text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:leading-[1.1]"
 	>
