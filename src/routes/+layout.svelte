@@ -10,10 +10,6 @@
 
 	const links: LinkBarItem[] = [
 		{
-			url: '/',
-			text: 'Home'
-		},
-		{
 			url: '/games',
 			text: 'Games'
 		},
@@ -31,15 +27,17 @@
 <Toaster />
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
 	<div class="flex flex-wrap items-center justify-between mx-auto p-4">
-		<a href="/" class="flex items-center text-center self-center font-semibold">Devarsh's Maths</a>
+		<a href="/" class="flex items-center text-center self-center font-semibold text-xl"
+			>Devarsh's Maths</a
+		>
 		<div class="w-auto">
 			<ul class="font-medium flex flex-row">
 				{#each links as link}
 					<li>
 						<a
 							href={link.url}
-							aria-current={$page.url.pathname === link.url ? 'page' : undefined}
-							class={`block py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname === link.url ? 'text-blue-600' : ''}`}
+							aria-current={$page.url.pathname.startsWith(link.url) ? 'page' : undefined}
+							class={`py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname.startsWith(link.url) ? 'text-blue-600' : ''}`}
 							>{link.text}</a
 						>
 					</li>
