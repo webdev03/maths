@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from "$app/stores";
+	import { page } from '$app/stores';
 	import { Toaster } from '$lib/components/ui/sonner';
 	import '../app.css';
 
@@ -35,13 +35,14 @@
 		<div class="w-auto">
 			<ul class="font-medium flex flex-row">
 				{#each links as link}
-				<li>
-					<a
-						href={link.url}
-						aria-current={$page.url.pathname === link.url ? "page" : undefined}
-						class={`block py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname === link.url ? "text-blue-600" : ""}`}>{link.text}</a
-					>
-				</li>
+					<li>
+						<a
+							href={link.url}
+							aria-current={$page.url.pathname === link.url ? 'page' : undefined}
+							class={`block py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname === link.url ? 'text-blue-600' : ''}`}
+							>{link.text}</a
+						>
+					</li>
 				{/each}
 			</ul>
 		</div>
