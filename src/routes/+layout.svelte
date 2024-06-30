@@ -24,6 +24,10 @@
 	];
 </script>
 
+<svelte:head>
+	<title>Devarsh's Maths</title>
+</svelte:head>
+
 <Toaster />
 <nav class="bg-white border-gray-200 dark:bg-gray-900">
 	<div class="flex flex-wrap items-center justify-between mx-auto p-4">
@@ -35,7 +39,7 @@
 					<a
 						href={link.url}
 						aria-current={$page.url.pathname === link.url ? "page" : undefined}
-						class={`block py-2 px-3 text-gray-900 rounded hover:bg-gray-200 transition-all ${$page.url.pathname === link.url ? "text-blue-600" : ""}`}>{link.text}</a
+						class={`block py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname === link.url ? "text-blue-600" : ""}`}>{link.text}</a
 					>
 				</li>
 				{/each}
