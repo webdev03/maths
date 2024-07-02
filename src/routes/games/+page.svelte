@@ -18,14 +18,16 @@
 	];
 </script>
 
-<Header size="h1">Games</Header>
-<div class="mt-4 w-full grid grid-cols-5 gap-4">
-	{#each games as game}
-		<a href={game.url}
-			><div class="{game.colour} p-3 rounded">
-				<Header size="h3">{game.name}</Header>
-				<p>{game.description}</p>
-			</div></a
-		>
-	{/each}
+<div class="p-2">
+	<Header size="h1">Games</Header>
+	<div class="mt-4 w-full grid grid-cols-5 gap-4">
+		{#each games as game}
+			<a href={game.url}
+				><div class="{game.colour} p-3 rounded">
+					<Header size="h3">{game.name}</Header>
+					<p>{game.description}</p>
+				</div></a
+			>
+		{/each}
+	</div>
 </div>
