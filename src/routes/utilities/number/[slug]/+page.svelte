@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import latex from '$lib/latex';
 
 	export let data: PageData;
 
@@ -22,6 +23,47 @@
 					if (n % i === 0) return 'No';
 				}
 				return n > 1 ? 'Yes' : 'No';
+			}
+		},
+		{
+			header: 'What is its prime factorisation?',
+			fn(n) {
+				let a = n;
+				const factors: number[] = [];
+				while (a >= 2) {
+					for (let i = 2; i <= a; i++) {
+						if (a % i === 0) {
+							a = a / i;
+							factors.push(i);
+							break;
+						}
+					}
+				}
+				let str = '';
+				let currentFactor = factors[0];
+				let currentFactorTimes = 1;
+				for (let i = 1; i <= factors.length; i++) {
+					if (factors[i] === currentFactor) {
+						currentFactorTimes++;
+					} else {
+						if (currentFactorTimes === 1) {
+							str += `${currentFactor} \\times`;
+						} else {
+							str += `${currentFactor}^${currentFactorTimes} \\times`;
+						}
+						currentFactor = factors[i];
+						currentFactorTimes = 1;
+					}
+				}
+				if (currentFactor && currentFactorTimes === 1) {
+					str += `${currentFactor}`;
+				} else if (currentFactor && currentFactorTimes > 1) {
+					str += `${currentFactor}^${currentFactorTimes}`;
+				}
+
+				let toReturn = str.trim();
+				if (toReturn.endsWith('\\times')) toReturn = toReturn.substring(0, toReturn.length - 6);
+				return latex(toReturn);
 			}
 		},
 		{
@@ -59,6 +101,22 @@
 					? 'Yes'
 					: 'No';
 			}
+		},
+		{
+			header: 'Is it a perfect number?',
+			fn(n) {
+				let factorSum = 0;
+				for (let i = 1; i < n; i++) {
+					if (n % i === 0) factorSum += i;
+				}
+				return factorSum === n ? 'Yes' : 'No';
+			}
+		},
+		{
+			header: 'Is it palindromic?',
+			fn(n) {
+				return n.toString().split('').reverse().join('') === n.toString() ? 'Yes' : 'No';
+			}
 		}
 	];
 </script>
@@ -72,7 +130,7 @@
 	{#each properties as property}
 		<div class="p-2 rounded flex flex-col bg-emerald-300">
 			<span class="font-semibold">{property.header}</span>
-			<p>{property.fn(data.n)}</p>
+			<p class="max-h-32 overflow-scroll">{@html property.fn(data.n)}</p>
 		</div>
 	{/each}
 </div>
