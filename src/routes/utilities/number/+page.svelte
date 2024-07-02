@@ -7,7 +7,6 @@
 	let query = '';
 	async function submit() {
 		if (isNaN(Number(query))) return;
-		console.log(query);
 		requestAnimationFrame(() => goto(`/utilities/number/${query}`));
 	}
 </script>
