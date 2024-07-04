@@ -10,6 +10,7 @@
 		requestAnimationFrame(() => goto(`/utilities/number/${query}`));
 	}
 </script>
+
 <div class="flex flex-col justify-center items-center">
 	<Header size="h1">Number Search</Header>
 	<form on:submit={submit} class="p-2 flex justify-center max-w-sm items-center space-x-2">
@@ -30,4 +31,3 @@
 		<Button type="submit">Search</Button>
 	</form>
 </div>
-
