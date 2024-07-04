@@ -138,6 +138,21 @@
 					previous.add(currentValue);
 				}
 			}
+		},
+		{
+			header: `What is its Collatz Conjecture (${latex("3n+1")}) number?`,
+			fn(n) {
+				let current = n;
+				let steps = 1;
+				while(true) {
+					if(current % 2 === 0) current = current / 2;
+					else current = 3 * current + 1;
+
+					steps++;
+					if(current === 1) return steps;
+					if(steps > 1500) return "Steps greater than 1500";
+				}
+			}
 		}
 	];
 </script>
@@ -150,7 +165,7 @@
 <div class="p-2 mt-4 w-full grid grid-cols-3 gap-4">
 	{#each properties as property}
 		<div class="p-2 rounded flex flex-col bg-emerald-300">
-			<span class="font-semibold">{property.header}</span>
+			<span class="font-semibold">{@html property.header}</span>
 			<p class="max-h-32 overflow-scroll">{@html property.fn(data.n)}</p>
 		</div>
 	{/each}
