@@ -117,6 +117,27 @@
 			fn(n) {
 				return n.toString().split('').reverse().join('') === n.toString() ? 'Yes' : 'No';
 			}
+		},
+		{
+			header: 'Is it a happy number?',
+			fn(n) {
+				function squareDigits(inp: number) {
+					return inp
+						.toString()
+						.split('')
+						.map(Number)
+						.map((x) => x * x)
+						.reduce((a, b) => a + b);
+				}
+				let previous = new Set();
+				let currentValue = n;
+				while (true) {
+					currentValue = squareDigits(currentValue);
+					if (currentValue === 1) return 'Yes';
+					if (previous.has(currentValue)) return 'No';
+					previous.add(currentValue);
+				}
+			}
 		}
 	];
 </script>
