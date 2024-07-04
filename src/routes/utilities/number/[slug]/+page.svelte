@@ -140,17 +140,17 @@
 			}
 		},
 		{
-			header: `What is its Collatz Conjecture (${latex("3n+1")}) number?`,
+			header: `What is its Collatz Conjecture (${latex('3n+1')}) number?`,
 			fn(n) {
 				let current = n;
 				let steps = 1;
-				while(true) {
-					if(current % 2 === 0) current = current / 2;
+				while (true) {
+					if (current % 2 === 0) current = current / 2;
 					else current = 3 * current + 1;
 
 					steps++;
-					if(current === 1) return steps;
-					if(steps > 1500) return "Steps greater than 1500";
+					if (current === 1) return steps;
+					if (steps > 1500) return 'Steps greater than 1500';
 				}
 			}
 		}
