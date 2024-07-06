@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import '../app.css';
+	import '../../app.css';
 
 	interface LinkBarItem {
 		url: string;
