@@ -10,5 +10,7 @@
 		<Button href="/mathex/app/play" class="font-bold">Play</Button>
 		<Button href="/mathex/app/create">Create</Button>
 	</div>
-	<Button variant="link" class="text-white" href="/"><MoveLeft class="mr-1" /> Back to Devarsh's Maths</Button>
+	<Button variant="link" class="text-white" href="/"
+		><MoveLeft class="mr-1" /> Back to Devarsh's Maths</Button
+	>
 </div>

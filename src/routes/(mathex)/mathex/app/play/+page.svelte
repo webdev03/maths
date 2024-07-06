@@ -2,25 +2,29 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Header } from '$lib/components/ui/header';
 	import MoveLeft from 'lucide-svelte/icons/move-left';
-    import type { ClientKnownRoom } from '$lib/mathex/types';
+	import type { ClientKnownRoom } from '$lib/mathex/types';
 
-    let rooms: ClientKnownRoom[] = [];
+	let rooms: ClientKnownRoom[] = [];
 </script>
 
 <div class="flex flex-col h-full w-full justify-center items-center">
 	<Header size="h1">Rooms</Header>
 	<div class="bg-white text-slate-900 p-2 rounded shadow w-64 h-80 overflow-scroll *:w-full *:my-1">
 		{#each rooms as room}
-            <div class="rounded outline-dashed outline-2 outline-offset-1 outline-blue-500 w-full flex p-1">
-                <div class="flex flex-col flex-1">
-                    <p class="text-lg font-bold">{room.name}</p>
-                    <p class="text-sm text-muted-foreground">{room.playerCount} players</p>
-                </div>
-                <Button href="/mathex/app/play/{room.id}">Join</Button>
-            </div>
-        {:else}
-            <p class="italic text-center">No rooms found.</p>
-        {/each}
+			<div
+				class="rounded outline-dashed outline-2 outline-offset-1 outline-blue-500 w-full flex p-1"
+			>
+				<div class="flex flex-col flex-1">
+					<p class="text-lg font-bold">{room.name}</p>
+					<p class="text-sm text-muted-foreground">{room.playerCount} players</p>
+				</div>
+				<Button href="/mathex/app/play/{room.id}">Join</Button>
+			</div>
+		{:else}
+			<p class="italic text-center">No rooms found.</p>
+		{/each}
 	</div>
-	<Button variant="link" class="text-white" href="/mathex/app"><MoveLeft class="mr-1" /> Back to home</Button>
+	<Button variant="link" class="text-white" href="/mathex/app"
+		><MoveLeft class="mr-1" /> Back to home</Button
+	>
 </div>
