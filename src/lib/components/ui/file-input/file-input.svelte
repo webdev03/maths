@@ -4,7 +4,7 @@
 	import { cn } from '$lib/utils.js';
 
 	type $$Props = HTMLInputAttributes & {
-		files: FileList | null | undefined
+		files: FileList | null | undefined;
 	};
 	type $$Events = InputEvents;
 

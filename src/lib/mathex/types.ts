@@ -34,7 +34,10 @@ export interface NumberQuestion {
 	solutions: number[];
 }
 
-export type Question = NumberQuestion;
+export type Question = {
+	type: 'number';
+	data: NumberQuestion | null;
+};
 
 export interface Room {
 	/**
