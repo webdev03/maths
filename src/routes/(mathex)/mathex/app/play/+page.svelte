@@ -2,9 +2,21 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Header } from '$lib/components/ui/header';
 	import MoveLeft from 'lucide-svelte/icons/move-left';
-	import type { ClientKnownRoom } from '$lib/mathex/types';
+	import type {
+		RoomSearchServerToClientEvents,
+		RoomSearchClientToServerEvents,
+		ClientKnownRoom
+	} from '$lib/mathex/types';
+	import { io, type Socket } from 'socket.io-client';
 
 	let rooms: ClientKnownRoom[] = [];
+	let loading = true;
+	const socket: Socket<RoomSearchServerToClientEvents, RoomSearchClientToServerEvents> =
+		io('/rooms');
+	socket.on('data', (data) => {
+		loading = false;
+		rooms = data;
+	});
 </script>
 
 <div class="flex flex-col h-full w-full justify-center items-center">
@@ -21,7 +33,13 @@
 				<Button href="/mathex/app/play/{room.id}">Join</Button>
 			</div>
 		{:else}
-			<p class="italic text-center">No rooms found.</p>
+			<p class="italic text-center">
+				{#if loading}
+					Loading...
+				{:else}
+					No rooms found.
+				{/if}
+			</p>
 		{/each}
 	</div>
 	<Button variant="link" class="text-white" href="/mathex/app"

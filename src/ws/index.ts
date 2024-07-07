@@ -32,7 +32,7 @@ export const createWSServer = (base: ServerInstance) => {
 		RoomSearchInterServerEvents,
 		RoomSearchSocketData
 	>;
-	const broadcastRooms = () => {
+	const getBroadcastRooms = () => {
 		const keys = rooms.keys();
 		let roomsTR: ClientKnownRoom[] = [];
 		for (const key of keys) {
@@ -45,8 +45,12 @@ export const createWSServer = (base: ServerInstance) => {
 				questionCount: room.questions.length
 			});
 		}
-		roomSearchNamespace.emit('data', roomsTR);
+		return roomsTR;
 	};
+	const broadcastRooms = () => roomSearchNamespace.emit("data", getBroadcastRooms());
+	roomSearchNamespace.on("connection", (socket) => {
+		socket.emit("data", getBroadcastRooms());
+	})
 	io.on('connection', (socket) => {
 		socket.emit('alert', 'success', 'Hello, World');
 	});
