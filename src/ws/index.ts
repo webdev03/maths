@@ -47,10 +47,10 @@ export const createWSServer = (base: ServerInstance) => {
 		}
 		return roomsTR;
 	};
-	const broadcastRooms = () => roomSearchNamespace.emit("data", getBroadcastRooms());
-	roomSearchNamespace.on("connection", (socket) => {
-		socket.emit("data", getBroadcastRooms());
-	})
+	const broadcastRooms = () => roomSearchNamespace.emit('data', getBroadcastRooms());
+	roomSearchNamespace.on('connection', (socket) => {
+		socket.emit('data', getBroadcastRooms());
+	});
 	io.on('connection', (socket) => {
 		socket.emit('alert', 'success', 'Hello, World');
 	});
