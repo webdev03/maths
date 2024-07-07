@@ -8,6 +8,16 @@ export interface ClientToServerEvents {}
 
 export interface InterServerEvents {}
 
+export interface RoomSearchClientToServerEvents {}
+
+export interface RoomSearchServerToClientEvents {
+	data: (rooms: ClientKnownRoom[]) => void;
+}
+
+export interface RoomSearchInterServerEvents {}
+
+export interface RoomSearchSocketData {}
+
 export interface SocketData {
 	name: string;
 	age: number;
