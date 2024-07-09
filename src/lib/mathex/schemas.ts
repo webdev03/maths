@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import type { ToastT } from 'svelte-sonner';
 
 export interface ServerToClientEvents {
@@ -23,37 +24,26 @@ export interface SocketData {
 	age: number;
 }
 
-export interface NumberQuestion {
-	/**
-	 * HTML contents
-	 */
-	contents: string;
-	/**
-	 * Solutions list
-	 */
-	solutions: number[];
-}
+export const NumberQuestion = z.object({
+	contents: z.string(),
+	solutions: z.array(z.number())
+});
 
-export interface TextQuestion {
-	/**
-	 * HTML contents
-	 */
-	contents: string;
-	/**
-	 * Solutions list
-	 */
-	solutions: string[];
-}
+export const TextQuestion = z.object({
+	contents: z.string(),
+	solutions: z.array(z.string())
+});
 
-export type Question =
-	| {
-			type: 'number';
-			data: NumberQuestion | null;
-	  }
-	| {
-			type: 'text';
-			data: TextQuestion | null;
-	  };
+export const Question = z.union([
+	z.object({
+		type: z.literal('number'),
+		data: NumberQuestion
+	}),
+	z.object({
+		type: z.literal('text'),
+		data: TextQuestion
+	})
+]);
 
 export interface Room {
 	/**
@@ -71,7 +61,7 @@ export interface Room {
 	/**
 	 * Questions list
 	 */
-	questions: Question[];
+	questions: z.infer<typeof Question>[];
 }
 
 export interface ClientKnownRoom {

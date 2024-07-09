@@ -4,12 +4,13 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
 
-	import type { NumberQuestion } from '../types';
+	import { z } from 'zod';
+	import type { NumberQuestion } from '../schemas';
 
 	import Plus from 'lucide-svelte/icons/plus';
 	import Minus from 'lucide-svelte/icons/minus';
 
-	export let question: NumberQuestion | null;
+	export let question: z.infer<typeof NumberQuestion> | null;
 	if (question === null)
 		question = {
 			contents: '',

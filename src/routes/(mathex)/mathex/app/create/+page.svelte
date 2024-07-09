@@ -7,10 +7,12 @@
 
 	let files: FileList | undefined;
 
-	function createRoom() {
+	async function createRoom() {
 		if (!files) {
 			toast.error('No file uploaded!');
+			return;
 		}
+		const set = JSON.parse(await files[0].text());
 	}
 </script>
 

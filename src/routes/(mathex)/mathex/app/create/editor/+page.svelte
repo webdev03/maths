@@ -1,15 +1,16 @@
 <script lang="ts">
+	import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button';
 	import { Header } from '$lib/components/ui/header';
 	import * as Menubar from '$lib/components/ui/menubar';
-	import type { Question } from '$lib/mathex/types';
+	import { Question } from '$lib/mathex/schemas';
 
 	import NumberEditor from '$lib/mathex/editors/NumberEditor.svelte';
 	import MoveRight from 'lucide-svelte/icons/move-right';
 	import X from 'lucide-svelte/icons/x';
 	import TextEditor from '$lib/mathex/editors/TextEditor.svelte';
 
-	let questions: Question[] = [];
+	let questions: z.infer<typeof Question>[] = [];
 	let currentQuestionIdx = 0;
 	$: currentQuestion = questions[currentQuestionIdx];
 
@@ -46,8 +47,7 @@
 
 		input.click();
 	}
-
-	function newQuestion(type: Question['type']) {
+	function newQuestion(type: (z.infer<typeof Question>)["type"]) {
 		if (questions.length >= 100) {
 			alert('You cannot have more than 100 questions in a set!');
 			return;

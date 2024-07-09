@@ -16,7 +16,7 @@ import type {
 	RoomSearchSocketData,
 	Room,
 	ClientKnownRoom
-} from '$lib/mathex/types';
+} from '$lib/mathex/schemas';
 
 export const createWSServer = (base: ServerInstance) => {
 	let rooms: Map<string, Room> = new Map();

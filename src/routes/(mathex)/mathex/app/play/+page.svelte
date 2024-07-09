@@ -6,7 +6,7 @@
 		RoomSearchServerToClientEvents,
 		RoomSearchClientToServerEvents,
 		ClientKnownRoom
-	} from '$lib/mathex/types';
+	} from '$lib/mathex/schemas';
 	import { io, type Socket } from 'socket.io-client';
 
 	let rooms: ClientKnownRoom[] = [];
