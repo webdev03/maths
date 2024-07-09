@@ -26,6 +26,27 @@
 		document.body.removeChild(element);
 	}
 
+	function upload() {
+		let input = document.createElement('input');
+		input.type = 'file';
+		input.multiple = false;
+		input.accept = 'application/json';
+
+		input.addEventListener(
+			'change',
+			async () => {
+				if (!input.files) return;
+				const file = input.files[0];
+				questions = JSON.parse(await file.text());
+			},
+			{
+				once: true
+			}
+		);
+
+		input.click();
+	}
+
 	function newQuestion(type: Question['type']) {
 		if (questions.length >= 100) {
 			alert('You cannot have more than 100 questions in a set!');
@@ -61,7 +82,7 @@
 			<Menubar.Content>
 				<Menubar.Item>Clear Set</Menubar.Item>
 				<Menubar.Separator />
-				<Menubar.Item>Import JSON</Menubar.Item>
+				<Menubar.Item on:click={upload}>Import JSON</Menubar.Item>
 				<Menubar.Item on:click={download}>Export JSON</Menubar.Item>
 			</Menubar.Content>
 		</Menubar.Menu>
