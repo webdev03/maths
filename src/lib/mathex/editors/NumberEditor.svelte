@@ -16,7 +16,6 @@
 			solutions: []
 		};
 </script>
-
 <div class="grid w-full gap-1.5">
 	<Label for="question-text">Question text</Label>
 	<Textarea
@@ -28,11 +27,15 @@
 <div class="mt-2 grid gap-1.5">
 	<Label>Solutions</Label>
 	{#each question.solutions as solution, i}
-		<div class="flex gap-2"><Input type="number" bind:value={solution} /><Button on:click={() => {
-            question.solutions = question.solutions.toSpliced(i, 1);
-        }}><Minus />Remove</Button></div>
+		<div class="flex gap-2">
+			<Input type="number" bind:value={solution} /><Button
+				on:click={() => {
+					question.solutions = question.solutions.toSpliced(i, 1);
+				}}><Minus class="mr-1" />Remove</Button
+			>
+		</div>
 	{/each}
 	<Button on:click={() => (question.solutions = [...question.solutions, 1])} class="w-48"
-		><Plus />Add solution</Button
+		><Plus class="mr-1" />Add solution</Button
 	>
 </div>
