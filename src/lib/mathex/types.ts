@@ -34,10 +34,26 @@ export interface NumberQuestion {
 	solutions: number[];
 }
 
-export type Question = {
-	type: 'number';
-	data: NumberQuestion | null;
-};
+export interface TextQuestion {
+	/**
+	 * HTML contents
+	 */
+	contents: string;
+	/**
+	 * Solutions list
+	 */
+	solutions: string[];
+}
+
+export type Question =
+	| {
+			type: 'number';
+			data: NumberQuestion | null;
+	  }
+	| {
+			type: 'text';
+			data: TextQuestion | null;
+	  };
 
 export interface Room {
 	/**

@@ -4,12 +4,12 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
 
-	import type { NumberQuestion } from '../types';
+	import type { TextQuestion } from '../types';
 
 	import Plus from 'lucide-svelte/icons/plus';
 	import Minus from 'lucide-svelte/icons/minus';
 
-	export let question: NumberQuestion | null;
+	export let question: TextQuestion | null;
 	if (question === null)
 		question = {
 			contents: '',
@@ -29,14 +29,14 @@
 	<Label>Solutions</Label>
 	{#each question.solutions as solution, i}
 		<div class="flex gap-2">
-			<Input type="number" bind:value={solution} /><Button
+			<Input type="text" bind:value={solution} /><Button
 				on:click={() => {
 					question.solutions = question.solutions.toSpliced(i, 1);
 				}}><Minus class="mr-1" />Remove</Button
 			>
 		</div>
 	{/each}
-	<Button on:click={() => (question.solutions = [...question.solutions, 1])} class="w-48"
+	<Button on:click={() => (question.solutions = [...question.solutions, ''])} class="w-48"
 		><Plus class="mr-1" />Add solution</Button
 	>
 </div>
