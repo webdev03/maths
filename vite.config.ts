@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { type ViteDevServer, defineConfig } from 'vite';
-import { createWSServer } from './src/ws';
+import { createWSServer } from './src/ws/index.server';
 
 const webSocketServer = {
 	name: 'webSocketServer',

@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import type { ToastT } from 'svelte-sonner';
 
+export const RoomName = z
+	.string()
+	.min(3, 'The room name has to be at least 3 characters long')
+	.max(60, 'The room name cannot be greater than 60 characters long');
+
 export interface ServerToClientEvents {
 	alert: (type: ToastT['type'], message: string) => void;
 }
@@ -9,10 +14,13 @@ export interface ClientToServerEvents {}
 
 export interface InterServerEvents {}
 
-export interface RoomSearchClientToServerEvents {}
+export interface RoomSearchClientToServerEvents {
+	newRoom: (name: string, questions: z.infer<typeof Question>[]) => void;
+}
 
 export interface RoomSearchServerToClientEvents {
 	data: (rooms: ClientKnownRoom[]) => void;
+	goTo: (path: string) => void;
 }
 
 export interface RoomSearchInterServerEvents {}
@@ -62,6 +70,10 @@ export interface Room {
 	 * Questions list
 	 */
 	questions: z.infer<typeof Question>[];
+	/**
+	 * Token that the manager can use to manage the room
+	 */
+	runToken: string;
 }
 
 export interface ClientKnownRoom {

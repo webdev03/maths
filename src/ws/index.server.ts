@@ -5,18 +5,23 @@ import { Server as HTTPSServer } from 'https';
 import type { Http2SecureServer, Http2Server } from 'http2';
 type ServerInstance = httpServer | HTTPSServer | Http2SecureServer | Http2Server;
 
-import type {
-	ClientToServerEvents,
-	ServerToClientEvents,
-	InterServerEvents,
-	SocketData,
-	RoomSearchClientToServerEvents,
-	RoomSearchServerToClientEvents,
-	RoomSearchInterServerEvents,
-	RoomSearchSocketData,
-	Room,
-	ClientKnownRoom
+import {
+	type ClientToServerEvents,
+	type ServerToClientEvents,
+	type InterServerEvents,
+	type SocketData,
+	type RoomSearchClientToServerEvents,
+	type RoomSearchServerToClientEvents,
+	type RoomSearchInterServerEvents,
+	type RoomSearchSocketData,
+	type Room,
+	type ClientKnownRoom,
+	RoomName,
+	Question
 } from '$lib/mathex/schemas';
+import { z } from 'zod';
+
+import { randomBytes } from 'crypto';
 
 export const createWSServer = (base: ServerInstance) => {
 	let rooms: Map<string, Room> = new Map();
@@ -50,7 +55,25 @@ export const createWSServer = (base: ServerInstance) => {
 	const broadcastRooms = () => roomSearchNamespace.emit('data', getBroadcastRooms());
 	roomSearchNamespace.on('connection', (socket) => {
 		socket.emit('data', getBroadcastRooms());
+		socket.on('newRoom', (name, questions) => {
+			const roomName = RoomName.parse(name);
+			const roomQuestions = z.array(Question).parse(questions);
+
+			const roomId = randomBytes(4).toString('hex').toUpperCase();
+			const runToken = randomBytes(128).toString('hex').toUpperCase();
+			rooms.set(roomId, {
+				id: roomId,
+				name: roomName,
+				players: [],
+				questions: roomQuestions,
+				runToken
+			});
+			broadcastRooms();
+			socket.emit('goTo', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
+			socket.disconnect();
+		});
 	});
+
 	io.on('connection', (socket) => {
 		socket.emit('alert', 'success', 'Hello, World');
 	});

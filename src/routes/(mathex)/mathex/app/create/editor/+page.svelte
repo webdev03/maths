@@ -14,6 +14,15 @@
 	let currentQuestionIdx = 0;
 	$: currentQuestion = questions[currentQuestionIdx];
 
+	// Ask if you want to leave
+	window.addEventListener('beforeunload', (e) => {
+		if (questions.length === 0) return;
+
+		e.preventDefault();
+		// Included for legacy support
+		e.returnValue = true;
+	});
+
 	function download() {
 		let element = document.createElement('a');
 		element.setAttribute(
@@ -38,6 +47,7 @@
 			async () => {
 				if (!input.files) return;
 				const file = input.files[0];
+				currentQuestionIdx = 0;
 				questions = JSON.parse(await file.text());
 			},
 			{
@@ -47,7 +57,8 @@
 
 		input.click();
 	}
-	function newQuestion(type: (z.infer<typeof Question>)["type"]) {
+
+	function newQuestion(type: z.infer<typeof Question>['type']) {
 		if (questions.length >= 100) {
 			alert('You cannot have more than 100 questions in a set!');
 			return;
