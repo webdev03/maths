@@ -42,6 +42,12 @@ export const TextQuestion = z.object({
 	solutions: z.array(z.string())
 });
 
+export const ExpressionQuestion = z.object({
+	contents: z.string(),
+	solutions: z.array(z.string()),
+	allowEquivalent: z.boolean()
+});
+
 export const Question = z.union([
 	z.object({
 		type: z.literal('number'),
@@ -50,6 +56,10 @@ export const Question = z.union([
 	z.object({
 		type: z.literal('text'),
 		data: TextQuestion
+	}),
+	z.object({
+		type: z.literal('expression'),
+		data: ExpressionQuestion
 	})
 ]);
 

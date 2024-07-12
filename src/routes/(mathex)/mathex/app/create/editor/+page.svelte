@@ -6,9 +6,10 @@
 	import { Question } from '$lib/mathex/schemas';
 
 	import NumberEditor from '$lib/mathex/editors/NumberEditor.svelte';
+	import TextEditor from '$lib/mathex/editors/TextEditor.svelte';
+	import ExpressionEditor from '$lib/mathex/editors/ExpressionEditor.svelte';
 	import MoveRight from 'lucide-svelte/icons/move-right';
 	import X from 'lucide-svelte/icons/x';
-	import TextEditor from '$lib/mathex/editors/TextEditor.svelte';
 
 	let questions: z.infer<typeof Question>[] = [];
 	let currentQuestionIdx = 0;
@@ -71,6 +72,15 @@
 					solutions: []
 				}
 			});
+		} else if (type === 'expression') {
+			questions.push({
+				type,
+				data: {
+					contents: '',
+					solutions: [],
+					allowEquivalent: true
+				}
+			});
 		}
 		currentQuestionIdx = questions.length - 1;
 		questions = questions;
@@ -105,6 +115,7 @@
 					<Menubar.SubContent>
 						<Menubar.Item on:click={() => newQuestion('number')}>Number</Menubar.Item>
 						<Menubar.Item on:click={() => newQuestion('text')}>Text</Menubar.Item>
+						<Menubar.Item on:click={() => newQuestion('expression')}>Expression</Menubar.Item>
 					</Menubar.SubContent>
 				</Menubar.Sub>
 			</Menubar.Content>
@@ -119,6 +130,8 @@
 					<NumberEditor question={currentQuestion.data} />
 				{:else if currentQuestion.type === 'text'}
 					<TextEditor question={currentQuestion.data} />
+				{:else if currentQuestion.type === 'expression'}
+					<ExpressionEditor question={currentQuestion.data} />
 				{/if}
 			{:else}
 				<div class="w-full text-2xl italic text-center">
