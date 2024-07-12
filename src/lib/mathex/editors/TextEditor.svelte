@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
+	import Quill from '$lib/components/Quill.svelte';
 
 	import { z } from 'zod';
 	import type { TextQuestion } from '../schemas';
@@ -20,11 +20,7 @@
 
 <div class="grid w-full gap-1.5">
 	<Label for="question-text">Question text</Label>
-	<Textarea
-		id="question-text"
-		placeholder="Type your question here."
-		bind:value={question.contents}
-	/>
+	<Quill bind:html={question.contents} />
 </div>
 <div class="mt-2 grid gap-1.5">
 	<Label>Solutions</Label>

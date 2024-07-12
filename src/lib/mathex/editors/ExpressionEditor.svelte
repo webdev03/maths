@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
-	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import Quill from '$lib/components/Quill.svelte';
 
 	import { z } from 'zod';
 	import type { ExpressionQuestion } from '../schemas';
 
 	import Plus from 'lucide-svelte/icons/plus';
 	import Minus from 'lucide-svelte/icons/minus';
-	import Quill from '$lib/components/Quill.svelte';
 
 	export let question: z.infer<typeof ExpressionQuestion> | null;
 	if (question === null)
@@ -23,11 +22,7 @@
 
 <div class="grid w-full gap-1.5">
 	<Label for="question-text">Question text</Label>
-	<Textarea
-		id="question-text"
-		placeholder="Type your question here."
-		bind:value={question.contents}
-	/>
+	<Quill bind:html={question.contents} />
 </div>
 <div class="mt-2 grid gap-1.5">
 	<Label>Solutions (should be parsable by mathjs)</Label>
