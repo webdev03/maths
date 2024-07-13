@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
-import { createWSServer } from './src/ws';
+import { createWSServer } from './src/ws/index.server';
 // @ts-ignore
 import { handler } from './build/handler.js';
 

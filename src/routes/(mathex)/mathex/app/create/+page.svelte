@@ -9,14 +9,14 @@
 	import {
 		Question,
 		RoomName,
-		type RoomSearchServerToClientEvents,
-		type RoomSearchClientToServerEvents
+		type RoomCreateServerToClientEvents,
+		type RoomCreateClientToServerEvents
 	} from '$lib/mathex/schemas';
 	import { z } from 'zod';
 
 	import { io, type Socket } from 'socket.io-client';
 	import { goto } from '$app/navigation';
-	const socket: Socket<RoomSearchServerToClientEvents, RoomSearchClientToServerEvents> =
+	const socket: Socket<RoomCreateServerToClientEvents, RoomCreateClientToServerEvents> =
 		io('/rooms');
 
 	let files: FileList | undefined;
@@ -40,7 +40,7 @@
 			return;
 		}
 		socket.emit('newRoom', roomNameValidation.data, set);
-		socket.once('goTo', (path) => {
+		socket.once('goto', (path) => {
 			socket.disconnect();
 			goto(path);
 		});

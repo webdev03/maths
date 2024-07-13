@@ -10,10 +10,10 @@ import {
 	type ServerToClientEvents,
 	type InterServerEvents,
 	type SocketData,
-	type RoomSearchClientToServerEvents,
-	type RoomSearchServerToClientEvents,
-	type RoomSearchInterServerEvents,
-	type RoomSearchSocketData,
+	type RoomCreateClientToServerEvents,
+	type RoomCreateServerToClientEvents,
+	type RoomCreateInterServerEvents,
+	type RoomCreateSocketData,
 	type Room,
 	type ClientKnownRoom,
 	RoomName,
@@ -31,30 +31,13 @@ export const createWSServer = (base: ServerInstance) => {
 			serveClient: false
 		}
 	);
-	const roomSearchNamespace = io.of('/rooms') as unknown as Namespace<
-		RoomSearchClientToServerEvents,
-		RoomSearchServerToClientEvents,
-		RoomSearchInterServerEvents,
-		RoomSearchSocketData
+	const roomCreateNamespace = io.of('/rooms') as unknown as Namespace<
+		RoomCreateClientToServerEvents,
+		RoomCreateServerToClientEvents,
+		RoomCreateInterServerEvents,
+		RoomCreateSocketData
 	>;
-	const getBroadcastRooms = () => {
-		const keys = rooms.keys();
-		let roomsTR: ClientKnownRoom[] = [];
-		for (const key of keys) {
-			const room = rooms.get(key);
-			if (!room) continue;
-			roomsTR.push({
-				id: key,
-				name: room.name,
-				playerCount: room.players.length,
-				questionCount: room.questions.length
-			});
-		}
-		return roomsTR;
-	};
-	const broadcastRooms = () => roomSearchNamespace.emit('data', getBroadcastRooms());
-	roomSearchNamespace.on('connection', (socket) => {
-		socket.emit('data', getBroadcastRooms());
+	roomCreateNamespace.on('connection', (socket) => {
 		socket.on('newRoom', (name, questions) => {
 			const roomName = RoomName.parse(name);
 			const roomQuestions = z.array(Question).parse(questions);
@@ -68,8 +51,7 @@ export const createWSServer = (base: ServerInstance) => {
 				questions: roomQuestions,
 				runToken
 			});
-			broadcastRooms();
-			socket.emit('goTo', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
+			socket.emit('goto', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
 			socket.disconnect();
 		});
 	});

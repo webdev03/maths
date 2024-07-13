@@ -14,18 +14,17 @@ export interface ClientToServerEvents {}
 
 export interface InterServerEvents {}
 
-export interface RoomSearchClientToServerEvents {
+export interface RoomCreateClientToServerEvents {
 	newRoom: (name: string, questions: z.infer<typeof Question>[]) => void;
 }
 
-export interface RoomSearchServerToClientEvents {
-	data: (rooms: ClientKnownRoom[]) => void;
-	goTo: (path: string) => void;
+export interface RoomCreateServerToClientEvents {
+	goto: (path: string) => void;
 }
 
-export interface RoomSearchInterServerEvents {}
+export interface RoomCreateInterServerEvents {}
 
-export interface RoomSearchSocketData {}
+export interface RoomCreateSocketData {}
 
 export interface SocketData {
 	name: string;
