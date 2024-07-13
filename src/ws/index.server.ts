@@ -61,7 +61,7 @@ export const createWSServer = (base: ServerInstance) => {
 		RoomSocketData
 	>;
 	roomNamespaces.on('connection', (socket) => {
-		socket.emit("alert", "success", "Hi!!")
+		socket.emit('alert', 'success', 'Hi!!');
 	});
 	return io;
 };

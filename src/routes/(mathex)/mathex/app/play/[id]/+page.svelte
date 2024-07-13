@@ -8,8 +8,8 @@
 	import { toast } from 'svelte-sonner';
 
 	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(`/room-${roomId}`);
-    socket.on("alert", (type, message) => {
-        // @ts-ignore
-        toast[type](message);
-    })
+	socket.on('alert', (type, message) => {
+		// @ts-ignore
+		toast[type](message);
+	});
 </script>
