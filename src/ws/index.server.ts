@@ -54,6 +54,7 @@ export const createWSServer = (base: ServerInstance) => {
 			socket.emit('goto', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
 			socket.disconnect();
 		});
+		socket.on('checkRoom', (id, callback) => callback(rooms.has(id)));
 	});
 
 	io.on('connection', (socket) => {
