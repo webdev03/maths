@@ -16,6 +16,7 @@ export interface InterServerEvents {}
 
 export interface RoomCreateClientToServerEvents {
 	newRoom: (name: string, questions: z.infer<typeof Question>[]) => void;
+	checkRoom: (id: string, callback: (exists: boolean) => void) => void;
 }
 
 export interface RoomCreateServerToClientEvents {
