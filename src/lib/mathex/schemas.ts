@@ -6,13 +6,15 @@ export const RoomName = z
 	.min(3, 'The room name has to be at least 3 characters long')
 	.max(60, 'The room name cannot be greater than 60 characters long');
 
-export interface ServerToClientEvents {
+export interface RoomServerToClientEvents {
 	alert: (type: ToastT['type'], message: string) => void;
 }
 
-export interface ClientToServerEvents {}
+export interface RoomClientToServerEvents {}
 
-export interface InterServerEvents {}
+export interface RoomInterServerEvents {}
+
+export interface RoomSocketData {}
 
 export interface RoomCreateClientToServerEvents {
 	newRoom: (name: string, questions: z.infer<typeof Question>[]) => void;
@@ -26,11 +28,6 @@ export interface RoomCreateServerToClientEvents {
 export interface RoomCreateInterServerEvents {}
 
 export interface RoomCreateSocketData {}
-
-export interface SocketData {
-	name: string;
-	age: number;
-}
 
 export const NumberQuestion = z.object({
 	contents: z.string(),

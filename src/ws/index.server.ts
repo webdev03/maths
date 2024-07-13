@@ -6,10 +6,10 @@ import type { Http2SecureServer, Http2Server } from 'http2';
 type ServerInstance = httpServer | HTTPSServer | Http2SecureServer | Http2Server;
 
 import {
-	type ClientToServerEvents as RoomClientToServerEvents,
-	type ServerToClientEvents as RoomServerToClientEvents,
-	type InterServerEvents as RoomInterServerEvents,
-	type SocketData as RoomSocketData,
+	type RoomClientToServerEvents,
+	type RoomServerToClientEvents,
+	type RoomInterServerEvents,
+	type RoomSocketData,
 	type RoomCreateClientToServerEvents,
 	type RoomCreateServerToClientEvents,
 	type RoomCreateInterServerEvents,
