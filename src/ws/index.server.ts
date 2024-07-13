@@ -6,10 +6,10 @@ import type { Http2SecureServer, Http2Server } from 'http2';
 type ServerInstance = httpServer | HTTPSServer | Http2SecureServer | Http2Server;
 
 import {
-	type ClientToServerEvents,
-	type ServerToClientEvents,
-	type InterServerEvents,
-	type SocketData,
+	type ClientToServerEvents as RoomClientToServerEvents,
+	type ServerToClientEvents as RoomServerToClientEvents,
+	type InterServerEvents as RoomInterServerEvents,
+	type SocketData as RoomSocketData,
 	type RoomCreateClientToServerEvents,
 	type RoomCreateServerToClientEvents,
 	type RoomCreateInterServerEvents,
@@ -25,18 +25,15 @@ import { randomBytes } from 'crypto';
 
 export const createWSServer = (base: ServerInstance) => {
 	let rooms: Map<string, Room> = new Map();
-	const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
-		base,
-		{
-			serveClient: false
-		}
-	);
-	const roomCreateNamespace = io.of('/rooms') as unknown as Namespace<
+	const io = new Server(base, {
+		serveClient: false
+	});
+	const roomCreateNamespace: Namespace<
 		RoomCreateClientToServerEvents,
 		RoomCreateServerToClientEvents,
 		RoomCreateInterServerEvents,
 		RoomCreateSocketData
-	>;
+	> = io.of('/rooms');
 	roomCreateNamespace.on('connection', (socket) => {
 		socket.on('newRoom', (name, questions) => {
 			const roomName = RoomName.parse(name);
@@ -57,8 +54,14 @@ export const createWSServer = (base: ServerInstance) => {
 		socket.on('checkRoom', (id, callback) => callback(rooms.has(id)));
 	});
 
-	io.on('connection', (socket) => {
-		socket.emit('alert', 'success', 'Hello, World');
+	const roomNamespaces = io.of(/^\/room\-[0-9A-F]{8}$/) as Namespace<
+		RoomClientToServerEvents,
+		RoomServerToClientEvents,
+		RoomInterServerEvents,
+		RoomSocketData
+	>;
+	roomNamespaces.on('connection', (socket) => {
+		socket.emit("alert", "success", "Hi!!")
 	});
 	return io;
 };
