@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Identicon from '$lib/components/Identicon.svelte';
+	import { Input } from '$lib/components/ui/input';
+	import { Button } from '$lib/components/ui/button';
 
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -16,8 +18,6 @@
 		type RoomClientToServerEvents
 	} from '$lib/mathex/schemas';
 	import { toast } from 'svelte-sonner';
-	import { Input } from '$lib/components/ui/input';
-	import { Button } from '$lib/components/ui/button';
 
 	const socket: Socket<RoomServerToClientEvents, RoomClientToServerEvents> = io(`/room-${roomId}`);
 	socket.on('alert', (type, message) => {
