@@ -6,11 +6,18 @@ export const RoomName = z
 	.min(3, 'The room name has to be at least 3 characters long')
 	.max(60, 'The room name cannot be greater than 60 characters long');
 
+export type State = 'connecting' | 'choose-name' | 'waiting_start' | 'started' | 'finished';
+
 export interface RoomServerToClientEvents {
 	alert: (type: ToastT['type'], message: string) => void;
+	lobby: () => void;
+	gameStart: () => void;
+	gameFinish: () => void;
 }
 
-export interface RoomClientToServerEvents {}
+export interface RoomClientToServerEvents {
+	join: (name: string) => void;
+}
 
 export interface RoomInterServerEvents {}
 
@@ -28,6 +35,20 @@ export interface RoomCreateServerToClientEvents {
 export interface RoomCreateInterServerEvents {}
 
 export interface RoomCreateSocketData {}
+
+export interface RoomManageClientToServerEvents {
+	start: () => void;
+	finish: () => void;
+	alertAll: (type: ToastT['type'], message: string) => void;
+}
+
+export interface RoomManageServerToClientEvents {
+	alert: (type: ToastT['type'], message: string) => void;
+}
+
+export interface RoomManageInterServerEvents {}
+
+export interface RoomManageSocketData {}
 
 export const NumberQuestion = z.object({
 	contents: z.string(),
@@ -81,6 +102,10 @@ export interface Room {
 	 * Token that the manager can use to manage the room
 	 */
 	runToken: string;
+	/**
+	 * If the game has started yet
+	 */
+	started: boolean;
 }
 
 export interface ClientKnownRoom {

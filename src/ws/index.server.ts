@@ -14,8 +14,13 @@ import {
 	type RoomCreateServerToClientEvents,
 	type RoomCreateInterServerEvents,
 	type RoomCreateSocketData,
+	type RoomManageClientToServerEvents,
+	type RoomManageServerToClientEvents,
+	type RoomManageInterServerEvents,
+	type RoomManageSocketData,
 	type Room,
 	type ClientKnownRoom,
+	type State,
 	RoomName,
 	Question
 } from '$lib/mathex/schemas';
@@ -46,12 +51,33 @@ export const createWSServer = (base: ServerInstance) => {
 				name: roomName,
 				players: [],
 				questions: roomQuestions,
-				runToken
+				runToken,
+				started: false
 			});
 			socket.emit('goto', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
 			socket.disconnect();
 		});
 		socket.on('checkRoom', (id, callback) => callback(rooms.has(id)));
+	});
+
+	const roomManageNamespace = io.of(/^\/manage\-[0-9A-F]{8}$/) as Namespace<
+		RoomManageClientToServerEvents,
+		RoomManageServerToClientEvents,
+		RoomManageInterServerEvents,
+		RoomManageSocketData
+	>;
+	roomManageNamespace.on('connection', (socket) => {
+		const roomId = /[0-9A-F]{8}/gm.exec(socket.nsp.name)?.[0];
+		if (!roomId) throw Error('No room ID!');
+		if (!rooms.has(roomId)) {
+			socket.emit('alert', 'error', 'Room does not exist!');
+			return;
+		}
+		const runToken = socket.handshake.query.runToken;
+		if (!runToken || runToken !== rooms.get(roomId)?.runToken) {
+			socket.disconnect();
+			return;
+		}
 	});
 
 	const roomNamespaces = io.of(/^\/room\-[0-9A-F]{8}$/) as Namespace<
@@ -61,7 +87,25 @@ export const createWSServer = (base: ServerInstance) => {
 		RoomSocketData
 	>;
 	roomNamespaces.on('connection', (socket) => {
-		socket.emit('alert', 'success', 'Hi!!');
+		const roomId = /[0-9A-F]{8}/gm.exec(socket.nsp.name)?.[0];
+		if (!roomId) return;
+		if (!rooms.has(roomId)) {
+			socket.emit('alert', 'error', 'Room does not exist!');
+			return;
+		}
+		socket.on('join', (name) => {
+			if (!name || name.length > 20) return;
+			const room = rooms.get(roomId);
+			if (!room) {
+				socket.disconnect();
+				return;
+			}
+			if (room.started) {
+				socket.emit('gameStart');
+			} else {
+				socket.emit('lobby');
+			}
+		});
 	});
 	return io;
 };

@@ -96,7 +96,7 @@
 	}
 </script>
 
-<div class="flex flex-col mt-1 h-full">
+<div class="flex flex-col h-full">
 	<Menubar.Root class="text-slate-900">
 		<Menubar.Menu>
 			<Menubar.Trigger>File</Menubar.Trigger>
