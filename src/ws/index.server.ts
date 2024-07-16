@@ -49,10 +49,9 @@ export const createWSServer = (base: ServerInstance) => {
 			rooms.set(roomId, {
 				id: roomId,
 				name: roomName,
-				players: [],
 				questions: roomQuestions,
 				runToken,
-				started: false
+				state: 'lobby'
 			});
 			socket.emit('goto', `/mathex/app/manage?id=${roomId}&runToken=${runToken}`);
 			socket.disconnect();
@@ -69,7 +68,8 @@ export const createWSServer = (base: ServerInstance) => {
 	roomManageNamespace.on('connection', (socket) => {
 		const roomId = /[0-9A-F]{8}/gm.exec(socket.nsp.name)?.[0];
 		if (!roomId) throw Error('No room ID!');
-		if (!rooms.has(roomId)) {
+		const room = rooms.get(roomId);
+		if (!room) {
 			socket.emit('alert', 'error', 'Room does not exist!');
 			return;
 		}
@@ -78,6 +78,27 @@ export const createWSServer = (base: ServerInstance) => {
 			socket.disconnect();
 			return;
 		}
+		const roomNamespace = io.of(`/rooms-${roomId}`) as Namespace<
+			RoomClientToServerEvents,
+			RoomServerToClientEvents,
+			RoomInterServerEvents,
+			RoomSocketData
+		>;
+		socket.on('alertAll', (type, message) => {
+			roomNamespace.emit('alert', type, message);
+		});
+		socket.on('start', () => {
+			room.state = 'started';
+			roomNamespace.emit('gameStart');
+			roomNamespace.emit('alert', 'info', 'Game has started!');
+			const firstQuestion = room.questions[0];
+			roomNamespace.emit('newQuestion', firstQuestion.data.contents, firstQuestion.type);
+		});
+		socket.on('finish', () => {
+			room.state = 'finished';
+			roomNamespace.emit('gameFinish');
+			roomNamespace.emit('alert', 'info', 'Game has finished!');
+		});
 	});
 
 	const roomNamespaces = io.of(/^\/room\-[0-9A-F]{8}$/) as Namespace<
@@ -100,12 +121,15 @@ export const createWSServer = (base: ServerInstance) => {
 				socket.disconnect();
 				return;
 			}
-			if (room.started) {
+			if (room.state === 'lobby') {
+				socket.emit('lobby');
+			} else if (room.state === 'started') {
 				socket.emit('gameStart');
 			} else {
-				socket.emit('lobby');
+				socket.emit('gameFinish');
 			}
 		});
+		socket.on('answer', (answer) => {});
 	});
 	return io;
 };

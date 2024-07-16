@@ -4,12 +4,20 @@
 	import {
 		type RoomServerToClientEvents,
 		type RoomClientToServerEvents,
-		type State
+		type State,
+		Question
 	} from '$lib/mathex/schemas';
 
 	import Identicon from '$lib/components/Identicon.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
+	import { Header } from '$lib/components/ui/header';
+
+	import NumberAnswer from '$lib/mathex/answers/NumberAnswer.svelte';
+	import TextAnswer from '$lib/mathex/answers/TextAnswer.svelte';
+	import ExpressionAnswer from '$lib/mathex/answers/ExpressionAnswer.svelte';
+
+	import { sanitize } from 'dompurify';
 
 	const roomId = $page.params.id;
 
@@ -18,6 +26,7 @@
 	let name: string = '';
 
 	import { toast } from 'svelte-sonner';
+	import type { z } from 'zod';
 
 	const socket: Socket<RoomServerToClientEvents, RoomClientToServerEvents> = io(`/room-${roomId}`);
 	socket.on('alert', (type, message) => {
@@ -32,6 +41,26 @@
 	socket.on('disconnect', () => toast.warning('Disconnected!'));
 
 	socket.on('lobby', () => (state = 'waiting_start'));
+
+	let answer: z.infer<typeof Question>['data']['solutions'][number] | null = null;
+
+	let currentQuestion: {
+		number: number;
+		content: string;
+		type: z.infer<typeof Question>['type'];
+	} = {
+		number: 0,
+		content: '<p>Loading...</p>',
+		type: 'text'
+	};
+	socket.on('gameStart', () => (state = 'started'));
+	socket.on('newQuestion', (content, type) => {
+		currentQuestion = {
+			number: currentQuestion.number + 1,
+			content: sanitize(content),
+			type
+		};
+	});
 </script>
 
 {#if state === 'connecting'}
@@ -58,4 +87,15 @@
 		class="animate-pulse font-bold text-4xl flex text-center items-center w-full h-full justify-center"
 		>Waiting for game to start...</span
 	>
+{:else if state === 'started'}
+	<Header size="h2">Question {currentQuestion.number}</Header>
+	{@html currentQuestion.content}
+	{#if currentQuestion.type === 'number'}
+		{currentQuestion.number}
+		<NumberAnswer bind:answer />
+	{:else if currentQuestion.type === 'text'}
+		<TextAnswer bind:answer />
+	{:else if currentQuestion.type === 'expression'}
+		<ExpressionAnswer bind:answer />
+	{/if}
 {/if}

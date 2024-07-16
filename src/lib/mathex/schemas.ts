@@ -13,10 +13,12 @@ export interface RoomServerToClientEvents {
 	lobby: () => void;
 	gameStart: () => void;
 	gameFinish: () => void;
+	newQuestion: (question: string, questionType: z.infer<typeof Question>['type']) => void;
 }
 
 export interface RoomClientToServerEvents {
 	join: (name: string) => void;
+	answer: (value: z.infer<typeof Question>['data']['solutions'][number]) => void;
 }
 
 export interface RoomInterServerEvents {}
@@ -87,10 +89,6 @@ export interface Room {
 	 */
 	id: string;
 	/**
-	 * Players as a list of socket IDs
-	 */
-	players: string[];
-	/**
 	 * Name
 	 */
 	name: string;
@@ -105,7 +103,7 @@ export interface Room {
 	/**
 	 * If the game has started yet
 	 */
-	started: boolean;
+	state: 'lobby' | 'started' | 'finished';
 }
 
 export interface ClientKnownRoom {
