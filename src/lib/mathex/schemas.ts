@@ -13,6 +13,8 @@ export interface RoomServerToClientEvents {
 	lobby: () => void;
 	gameStart: () => void;
 	gameFinish: () => void;
+	running: () => void;
+	stopRunning: () => void;
 	newQuestion: (question: string, questionType: z.infer<typeof Question>['type']) => void;
 }
 
@@ -23,7 +25,16 @@ export interface RoomClientToServerEvents {
 
 export interface RoomInterServerEvents {}
 
-export interface RoomSocketData {}
+export interface RoomSocketData {
+	/**
+	 * The current question the player is up to
+	 */
+	currentQuestion: number;
+	/**
+	 * The amount of time the player took to finish in milliseconds, or null
+	 */
+	finishingTime: number | null;
+}
 
 export interface RoomCreateClientToServerEvents {
 	newRoom: (name: string, questions: z.infer<typeof Question>[]) => void;

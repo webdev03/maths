@@ -17,7 +17,7 @@
 	import TextAnswer from '$lib/mathex/answers/TextAnswer.svelte';
 	import ExpressionAnswer from '$lib/mathex/answers/ExpressionAnswer.svelte';
 
-	import { sanitize } from 'dompurify';
+	import DOMPurify from 'dompurify';
 
 	const roomId = $page.params.id;
 
@@ -54,10 +54,11 @@
 		type: 'text'
 	};
 	socket.on('gameStart', () => (state = 'started'));
+	socket.on('gameFinish', () => (state = 'finished'));
 	socket.on('newQuestion', (content, type) => {
 		currentQuestion = {
 			number: currentQuestion.number + 1,
-			content: sanitize(content),
+			content: DOMPurify.sanitize(content),
 			type
 		};
 	});
@@ -88,14 +89,24 @@
 		>Waiting for game to start...</span
 	>
 {:else if state === 'started'}
-	<Header size="h2">Question {currentQuestion.number}</Header>
-	{@html currentQuestion.content}
-	{#if currentQuestion.type === 'number'}
-		{currentQuestion.number}
-		<NumberAnswer bind:answer />
-	{:else if currentQuestion.type === 'text'}
-		<TextAnswer bind:answer />
-	{:else if currentQuestion.type === 'expression'}
-		<ExpressionAnswer bind:answer />
-	{/if}
+	<div class="p-3 bg-white text-slate-900">
+		<Header size="h2">Question {currentQuestion.number}</Header>
+		<div class="prose prose-slate">{@html currentQuestion.content}</div>
+		{#if currentQuestion.type === 'number'}
+			<NumberAnswer bind:answer />
+		{:else if currentQuestion.type === 'text'}
+			<TextAnswer bind:answer />
+		{:else if currentQuestion.type === 'expression'}
+			<ExpressionAnswer bind:answer />
+		{/if}
+		<Button
+			on:click={() => {
+				if (!answer) {
+					toast.error('Answer is null!');
+					return;
+				}
+				socket.emit('answer', answer);
+			}}>Submit</Button
+		>
+	</div>
 {/if}

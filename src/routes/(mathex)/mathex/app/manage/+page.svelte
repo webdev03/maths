@@ -19,11 +19,12 @@
 	import { toast } from 'svelte-sonner';
 
 	const socket: Socket<RoomManageServerToClientEvents, RoomManageClientToServerEvents> = io(
-		`/room-${roomId}`,
+		`/manage-${roomId}`,
 		{
 			query: {
 				runToken
-			}
+			},
+			forceNew: true
 		}
 	);
 	socket.on('alert', (type, message) => {
@@ -38,11 +39,7 @@
 	let currentState = 'lobby' as Room['state'];
 
 	import type { ToastT } from 'svelte-sonner';
-	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	let alertType: ToastT['type'] | null = null;
-	function onSelectedAlertTypeChange(selection: any) {
-		alertType = selection;
-	}
 	let alertText = '';
 </script>
 
@@ -58,18 +55,21 @@
 	<div class="p-3 rounded text-slate-900 bg-white">
 		<Header size="h2">Alerts</Header>
 		<div class="flex w-full">
-			<Select.Root onSelectedChange={onSelectedAlertTypeChange}>
+			<Select.Root
+				onSelectedChange={(selection) => {
+					// @ts-ignore
+					if (selection?.value) alertType = selection.value;
+				}}
+			>
 				<Select.Trigger class="w-[180px]">
 					<Select.Value placeholder="Alert Type" />
 				</Select.Trigger>
 				<Select.Content>
-					<Select.Item value="action">Action</Select.Item>
 					<Select.Item value="success">Success</Select.Item>
 					<Select.Item value="info">Info</Select.Item>
 					<Select.Item value="warning">Warning</Select.Item>
 					<Select.Item value="error">Error</Select.Item>
 					<Select.Item value="loading">Loading</Select.Item>
-					<Select.Item value="default">Default</Select.Item>
 				</Select.Content>
 			</Select.Root>
 			<Input bind:value={alertText} class="ml-2" placeholder="Alert Text" />

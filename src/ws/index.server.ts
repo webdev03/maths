@@ -20,13 +20,17 @@ import {
 	type RoomManageSocketData,
 	type Room,
 	type ClientKnownRoom,
-	type State,
 	RoomName,
 	Question
 } from '$lib/mathex/schemas';
+
 import { z } from 'zod';
 
 import { randomBytes } from 'crypto';
+import { create, all } from 'mathjs';
+
+const config = {};
+const math = create(all, config);
 
 export const createWSServer = (base: ServerInstance) => {
 	let rooms: Map<string, Room> = new Map();
@@ -71,6 +75,7 @@ export const createWSServer = (base: ServerInstance) => {
 		const room = rooms.get(roomId);
 		if (!room) {
 			socket.emit('alert', 'error', 'Room does not exist!');
+			socket.disconnect();
 			return;
 		}
 		const runToken = socket.handshake.query.runToken;
@@ -78,16 +83,16 @@ export const createWSServer = (base: ServerInstance) => {
 			socket.disconnect();
 			return;
 		}
-		const roomNamespace = io.of(`/rooms-${roomId}`) as Namespace<
+		const roomNamespace = io.of(`/room-${roomId}`) as Namespace<
 			RoomClientToServerEvents,
 			RoomServerToClientEvents,
 			RoomInterServerEvents,
 			RoomSocketData
 		>;
-		socket.on('alertAll', (type, message) => {
+		socket.on('alertAll', async (type, message) => {
 			roomNamespace.emit('alert', type, message);
 		});
-		socket.on('start', () => {
+		socket.on('start', async () => {
 			room.state = 'started';
 			roomNamespace.emit('gameStart');
 			roomNamespace.emit('alert', 'info', 'Game has started!');
@@ -107,13 +112,15 @@ export const createWSServer = (base: ServerInstance) => {
 		RoomInterServerEvents,
 		RoomSocketData
 	>;
-	roomNamespaces.on('connection', (socket) => {
+	roomNamespaces.on('connection', (socket): void => {
 		const roomId = /[0-9A-F]{8}/gm.exec(socket.nsp.name)?.[0];
 		if (!roomId) return;
-		if (!rooms.has(roomId)) {
+		const room = rooms.get(roomId);
+		if (!room) {
 			socket.emit('alert', 'error', 'Room does not exist!');
 			return;
 		}
+		socket.data.currentQuestion = 1;
 		socket.on('join', (name) => {
 			if (!name || name.length > 20) return;
 			const room = rooms.get(roomId);
@@ -125,11 +132,37 @@ export const createWSServer = (base: ServerInstance) => {
 				socket.emit('lobby');
 			} else if (room.state === 'started') {
 				socket.emit('gameStart');
+				const firstQuestion = room.questions[0];
+				socket.emit('newQuestion', firstQuestion.data.contents, firstQuestion.type);
 			} else {
 				socket.emit('gameFinish');
 			}
 		});
-		socket.on('answer', (answer) => {});
+		socket.on('answer', (answer) => {
+			const currentQuestion = room.questions[socket.data.currentQuestion - 1];
+			socket.emit('running');
+			const isCorrect = checkSolution(answer, currentQuestion);
+			setTimeout(() => {
+				// TODO
+				socket.emit('stopRunning');
+				if (isCorrect) {
+				} else {
+				}
+			}, 16 * 1000);
+		});
 	});
 	return io;
 };
+
+function checkSolution(guess: any, question: z.infer<typeof Question>) {
+	if (question.type === 'number') {
+		return question.data.solutions.includes(guess);
+	} else if (question.type === 'text') {
+		return question.data.solutions.includes(String(guess).toLowerCase());
+	} else if (question.type === 'expression') {
+		for (const solution of question.data.solutions) {
+			if (math.symbolicEqual(solution, String(guess))) return true;
+		}
+		return false;
+	}
+}
