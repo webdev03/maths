@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { minidenticon } from 'minidenticons';
+  import { minidenticon } from "minidenticons";
 
-	export let className: string;
-	export let seed: string;
+  export let className: string;
+  export let seed: string;
 
-	$: svg = minidenticon(seed);
+  $: svg = minidenticon(seed);
 </script>
 
 <div class={className}>{@html svg}</div>

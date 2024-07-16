@@ -1,9 +1,9 @@
-import Root from './header.svelte';
+import Root from "./header.svelte";
 
-type HeaderSize = 'h1' | 'h2' | 'h3' | 'h4';
+type HeaderSize = "h1" | "h2" | "h3" | "h4";
 
 type Props = {
-	size: HeaderSize;
+  size: HeaderSize;
 };
 
 export { Root, type Props, Root as Header, type Props as HeaderProps };

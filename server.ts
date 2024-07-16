@@ -1,8 +1,8 @@
-import express from 'express';
-import { createServer } from 'http';
-import { createWSServer } from './src/ws/index.server';
+import express from "express";
+import { createServer } from "http";
+import { createWSServer } from "./src/ws/index.server";
 // @ts-ignore
-import { handler } from './build/handler.js';
+import { handler } from "./build/handler.js";
 
 const port = process.env.PORT || 5185;
 const app = express();
