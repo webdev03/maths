@@ -143,10 +143,11 @@ export const createWSServer = (base: ServerInstance) => {
       socket.emit("running");
       const isCorrect = checkSolution(answer, currentQuestion);
       setTimeout(() => {
-        // TODO
         socket.emit("stopRunning");
         if (isCorrect) {
+          socket.emit("alert", "success", "Correct!")
         } else {
+          socket.emit("alert", "error", "Wrong!")
         }
       }, 16 * 1000);
     });
