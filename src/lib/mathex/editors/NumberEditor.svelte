@@ -16,6 +16,9 @@
       contents: "",
       solutions: []
     };
+  $: for (let i = 0; i < question.solutions.length; i++) {
+    question.solutions[i] = Number(question.solutions[i]);
+  }
 </script>
 
 <div class="grid w-full gap-1.5">
