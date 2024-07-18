@@ -37,7 +37,7 @@
     }
     let roomNameValidation = await RoomName.safeParseAsync(roomName);
     if (!roomNameValidation.success) {
-      toast.error(roomNameValidation.error.toString());
+      for(const issue of roomNameValidation.error.issues) toast.error(issue.message);
       return;
     }
     socket.emit("newRoom", roomNameValidation.data, set);
