@@ -16,6 +16,7 @@ export interface RoomServerToClientEvents {
   running: () => void;
   stopRunning: () => void;
   newQuestion: (question: string, questionType: z.infer<typeof Question>["type"]) => void;
+  confetti: () => void;
 }
 
 export interface RoomClientToServerEvents {
@@ -31,7 +32,11 @@ export interface RoomSocketData {
    */
   currentQuestion: number;
   /**
-   * The amount of time the player took to finish in milliseconds, or null
+   * The time in Unix milliseconds when the player started, or null
+   */
+  startingTime: number | null;
+  /**
+   * The time in Unix milliseconds when the player finished, or null
    */
   finishingTime: number | null;
 }

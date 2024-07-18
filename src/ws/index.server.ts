@@ -98,11 +98,19 @@ export const createWSServer = (base: ServerInstance) => {
       roomNamespace.emit("alert", "info", "Game has started!");
       const firstQuestion = room.questions[0];
       roomNamespace.emit("newQuestion", firstQuestion.data.contents, firstQuestion.type);
+      for (const playerSocket of await roomNamespace.fetchSockets()) {
+        playerSocket.data.startingTime = Date.now();
+      }
     });
-    socket.on("finish", () => {
+    socket.on("finish", async () => {
       room.state = "finished";
-      roomNamespace.emit("gameFinish");
-      roomNamespace.emit("alert", "info", "Game has finished!");
+      roomNamespace.emit("alert", "info", "Game has finished for everyone!");
+      for (const playerSocket of await roomNamespace.fetchSockets()) {
+        if (!playerSocket.data.finishingTime) {
+          playerSocket.data.finishingTime = Date.now();
+          playerSocket.emit("gameFinish");
+        }
+      }
     });
   });
 
@@ -120,7 +128,11 @@ export const createWSServer = (base: ServerInstance) => {
       socket.emit("alert", "error", "Room does not exist!");
       return;
     }
-    socket.data.currentQuestion = 1;
+    socket.data = {
+      currentQuestion: 1,
+      startingTime: null,
+      finishingTime: null
+    };
     socket.on("join", (name) => {
       if (!name || name.length > 20) return;
       const room = rooms.get(roomId);
@@ -132,6 +144,7 @@ export const createWSServer = (base: ServerInstance) => {
         socket.emit("lobby");
       } else if (room.state === "started") {
         socket.emit("gameStart");
+        socket.data.startingTime = Date.now();
         const firstQuestion = room.questions[0];
         socket.emit("newQuestion", firstQuestion.data.contents, firstQuestion.type);
       } else {
@@ -145,9 +158,19 @@ export const createWSServer = (base: ServerInstance) => {
       setTimeout(() => {
         socket.emit("stopRunning");
         if (isCorrect) {
-          socket.emit("alert", "success", "Correct!")
+          socket.emit("alert", "success", "Correct!");
+          if (socket.data.currentQuestion >= room.questions.length) {
+            socket.emit("alert", "success", "You have completed the questions!");
+            socket.emit("gameFinish");
+            socket.emit("confetti");
+            socket.data.finishingTime = Date.now();
+          } else {
+            socket.data.currentQuestion++;
+            const nextQuestion = room.questions[socket.data.currentQuestion - 1];
+            socket.emit("newQuestion", nextQuestion.data.contents, nextQuestion.type);
+          }
         } else {
-          socket.emit("alert", "error", "Wrong!")
+          socket.emit("alert", "error", "Wrong!");
         }
       }, 16 * 1000);
     });
@@ -157,9 +180,9 @@ export const createWSServer = (base: ServerInstance) => {
 
 function checkSolution(guess: any, question: z.infer<typeof Question>) {
   if (question.type === "number") {
-    return question.data.solutions.includes(guess);
+    return question.data.solutions.includes(Number(guess));
   } else if (question.type === "text") {
-    return question.data.solutions.includes(String(guess).toLowerCase());
+    return question.data.solutions.includes(String(guess).trim());
   } else if (question.type === "expression") {
     for (const solution of question.data.solutions) {
       if (math.symbolicEqual(solution, String(guess))) return true;

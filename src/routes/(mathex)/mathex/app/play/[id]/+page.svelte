@@ -12,10 +12,13 @@
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
+  import { Progress } from "$lib/components/ui/progress";
 
   import NumberAnswer from "$lib/mathex/answers/NumberAnswer.svelte";
   import TextAnswer from "$lib/mathex/answers/TextAnswer.svelte";
   import ExpressionAnswer from "$lib/mathex/answers/ExpressionAnswer.svelte";
+
+  import LoaderCircle from "lucide-svelte/icons/loader-circle";
 
   import DOMPurify from "dompurify";
 
@@ -44,6 +47,8 @@
 
   let answer: z.infer<typeof Question>["data"]["solutions"][number] | null = null;
 
+  let running: number | false = false;
+  let runningVisible = 0;
   let currentQuestion: {
     number: number;
     content: string;
@@ -61,7 +66,16 @@
       content: DOMPurify.sanitize(content),
       type
     };
+    running = false;
   });
+  socket.on("running", () => {
+    running = Date.now();
+    const interval = setInterval(() => {
+      if (running) runningVisible = ((Date.now() - running) / 16000) * 100;
+      else clearInterval(interval);
+    }, 16);
+  });
+  socket.on("stopRunning", () => (running = false));
 </script>
 
 {#if state === "connecting"}
@@ -87,24 +101,35 @@
     >Waiting for game to start...</span
   >
 {:else if state === "started"}
-  <div class="p-3 bg-white text-slate-900">
-    <Header size="h2">Question {currentQuestion.number}</Header>
-    <div class="prose prose-slate">{@html currentQuestion.content}</div>
-    {#if currentQuestion.type === "number"}
-      <NumberAnswer bind:answer />
-    {:else if currentQuestion.type === "text"}
-      <TextAnswer bind:answer />
-    {:else if currentQuestion.type === "expression"}
-      <ExpressionAnswer bind:answer />
-    {/if}
-    <Button
-      on:click={() => {
-        if (!answer) {
-          toast.error("Answer is null!");
-          return;
-        }
-        socket.emit("answer", answer);
-      }}>Submit</Button
-    >
-  </div>
+  {#if running}
+    <div class="p-3 bg-white text-slate-900 rounded">
+      <Header size="h2">Running...</Header>
+      <div class="flex justify-center items-center">
+        <LoaderCircle class="animate-spin mr-2" />
+        <Progress value={runningVisible} class="*:transition-none" />
+      </div>
+    </div>
+  {:else}
+    <div class="p-3 bg-white text-slate-900 rounded">
+      <Header size="h2">Question {currentQuestion.number}</Header>
+      <div class="prose prose-slate">{@html currentQuestion.content}</div>
+      {#if currentQuestion.type === "number"}
+        <NumberAnswer bind:answer />
+      {:else if currentQuestion.type === "text"}
+        <TextAnswer bind:answer />
+      {:else if currentQuestion.type === "expression"}
+        <ExpressionAnswer bind:answer />
+      {/if}
+      <Button
+        class="mt-2"
+        on:click={() => {
+          if (!answer) {
+            toast.error("Answer is null!");
+            return;
+          }
+          socket.emit("answer", answer);
+        }}>Submit</Button
+      >
+    </div>
+  {/if}
 {/if}
