@@ -89,6 +89,9 @@ export const createWSServer = (base: ServerInstance) => {
       RoomInterServerEvents,
       RoomSocketData
     >;
+    setTimeout(async () => {
+      socket.emit("playerData", await getPlayers(roomNamespace));
+    });
     socket.on("alertAll", async (type, message) => {
       roomNamespace.emit("alert", type, message);
     });
@@ -101,6 +104,8 @@ export const createWSServer = (base: ServerInstance) => {
       for (const playerSocket of await roomNamespace.fetchSockets()) {
         playerSocket.data.startingTime = Date.now();
       }
+      roomManageNamespace.emit("state", room.state);
+      roomManageNamespace.emit("playerData", await getPlayers(roomNamespace));
     });
     socket.on("finish", async () => {
       room.state = "finished";
@@ -111,6 +116,8 @@ export const createWSServer = (base: ServerInstance) => {
           playerSocket.emit("gameFinish");
         }
       }
+      roomManageNamespace.emit("state", room.state);
+      roomManageNamespace.emit("playerData", await getPlayers(roomNamespace));
     });
   });
 
@@ -131,15 +138,18 @@ export const createWSServer = (base: ServerInstance) => {
     socket.data = {
       currentQuestion: 1,
       startingTime: null,
-      finishingTime: null
+      finishingTime: null,
+      name: null
     };
-    socket.on("join", (name) => {
+    socket.on("join", async (name) => {
       if (!name || name.length > 20) return;
       const room = rooms.get(roomId);
       if (!room) {
         socket.disconnect();
         return;
       }
+      socket.data.name = name;
+      io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp));
       if (room.state === "lobby") {
         socket.emit("lobby");
       } else if (room.state === "started") {
@@ -155,26 +165,46 @@ export const createWSServer = (base: ServerInstance) => {
       const currentQuestion = room.questions[socket.data.currentQuestion - 1];
       socket.emit("running");
       const isCorrect = checkSolution(answer, currentQuestion);
-      setTimeout(() => {
+      setTimeout(async () => {
         socket.emit("stopRunning");
         if (isCorrect) {
           socket.emit("alert", "success", "Correct!");
           if (socket.data.currentQuestion >= room.questions.length) {
+            socket.data.finishingTime = Date.now();
             socket.emit("alert", "success", "You have completed the questions!");
             socket.emit("gameFinish");
             socket.emit("confetti");
-            socket.data.finishingTime = Date.now();
           } else {
             socket.data.currentQuestion++;
             const nextQuestion = room.questions[socket.data.currentQuestion - 1];
             socket.emit("newQuestion", nextQuestion.data.contents, nextQuestion.type);
           }
+          io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp));
         } else {
           socket.emit("alert", "error", "Wrong!");
         }
       }, 16 * 1000);
     });
   });
+
+  async function getPlayers(
+    ns: Namespace<RoomClientToServerEvents, RoomServerToClientEvents, RoomInterServerEvents, RoomSocketData>
+  ) {
+    let data: RoomSocketData[] = [];
+    for (const playerSocket of await ns.fetchSockets()) {
+      data.push(playerSocket.data);
+    }
+    data.sort((a, b) => {
+      if (!a.startingTime || !b.startingTime) return 0;
+      if (a.finishingTime && !b.finishingTime) return -1;
+      if (b.finishingTime && !a.finishingTime) return 1;
+      if (a.finishingTime && b.finishingTime)
+        return b.finishingTime - b.startingTime - (a.startingTime - a.finishingTime);
+      return b.currentQuestion - a.currentQuestion;
+    });
+    return data;
+  }
+
   return io;
 };
 
@@ -185,7 +215,9 @@ function checkSolution(guess: any, question: z.infer<typeof Question>) {
     return question.data.solutions.includes(String(guess).trim());
   } else if (question.type === "expression") {
     for (const solution of question.data.solutions) {
-      if (math.symbolicEqual(solution, String(guess))) return true;
+      try {
+        if (math.symbolicEqual(solution, String(guess))) return true;
+      } catch {}
     }
     return false;
   }

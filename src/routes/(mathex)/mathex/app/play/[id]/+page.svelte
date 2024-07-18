@@ -20,6 +20,9 @@
 
   import LoaderCircle from "lucide-svelte/icons/loader-circle";
 
+  import { Confetti } from "svelte-confetti";
+  let confetti = false;
+
   import DOMPurify from "dompurify";
 
   const roomId = $page.params.id;
@@ -60,6 +63,7 @@
   };
   socket.on("gameStart", () => (state = "started"));
   socket.on("gameFinish", () => (state = "finished"));
+  socket.on("confetti", () => (confetti = true));
   socket.on("newQuestion", (content, type) => {
     currentQuestion = {
       number: currentQuestion.number + 1,
@@ -73,7 +77,7 @@
     const interval = setInterval(() => {
       if (running) runningVisible = ((Date.now() - running) / 16000) * 100;
       else clearInterval(interval);
-    }, 16);
+    });
   });
   socket.on("stopRunning", () => (running = false));
 </script>
@@ -132,4 +136,9 @@
       >
     </div>
   {/if}
+{/if}
+{#if confetti}
+  <div class="fixed top-[-50px] left-0 h-screen w-screen flex justify-center overflow-hidden pointer-events-none">
+    <Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} infinite duration={4000} amount={250} fallDistance="100vh" />
+  </div>
 {/if}

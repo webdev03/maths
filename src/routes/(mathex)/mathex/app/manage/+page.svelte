@@ -5,13 +5,15 @@
   import {
     type RoomManageServerToClientEvents,
     type RoomManageClientToServerEvents,
-    type Room
+    type RoomState,
+    type RoomSocketData
   } from "$lib/mathex/schemas";
 
   import { Input } from "$lib/components/ui/input";
   import { Button } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
   import * as Select from "$lib/components/ui/select";
+  import Identicon from "$lib/components/Identicon.svelte";
 
   const roomId = $page.url.searchParams.get("id");
   const runToken = $page.url.searchParams.get("runToken");
@@ -33,7 +35,9 @@
   });
   socket.on("connect_error", () => toast.error("Failed to connect!"));
   socket.on("disconnect", () => toast.warning("Disconnected!"));
-  let currentState = "lobby" as Room["state"];
+  let players: RoomSocketData[] = [];
+  socket.on("playerData", (data) => (players = data));
+  let currentState: RoomState = "lobby";
 
   import type { ToastT } from "svelte-sonner";
   let alertType: ToastT["type"] | null = null;
@@ -46,6 +50,29 @@
       Join at <span class="font-bold">{$page.url.host}/mathex/app/play</span> with code:
     </div>
     <div class="w-full text-8xl font-bold">{roomId}</div>
+  </div>
+
+  <div class="p-3 rounded text-slate-900 bg-white">
+    <Header size="h2">Players ({players.length})</Header>
+    <div class="p-2 overflow-y-scroll flex items-center">
+      {#each players as player}
+        <div
+          class="mr-2 p-2 h-full flex flex-col items-center justify-center text-center border-2 border-solid rounded {player.startingTime
+            ? player.finishingTime
+              ? 'bg-emerald-200'
+              : 'bg-red-100'
+            : 'bg-inherit'}"
+        >
+          <Identicon className="inline w-16 h-16" seed={player.name || "Choosing..."} />
+          <span>{player.name || "Choosing..."}</span>
+          {#if currentState === "started"}
+            <span>Question {player.currentQuestion}</span>
+          {/if}
+        </div>
+      {:else}
+        <p class="italic">No players yet</p>
+      {/each}
+    </div>
   </div>
   <div class="p-3 rounded text-slate-900 bg-white">
     <Header size="h2">Alerts</Header>

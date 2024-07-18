@@ -28,6 +28,10 @@ export interface RoomInterServerEvents {}
 
 export interface RoomSocketData {
   /**
+   * The given name of the player
+   */
+  name: string | null;
+  /**
    * The current question the player is up to
    */
   currentQuestion: number;
@@ -62,6 +66,8 @@ export interface RoomManageClientToServerEvents {
 
 export interface RoomManageServerToClientEvents {
   alert: (type: ToastT["type"], message: string) => void;
+  state: (state: RoomState) => void;
+  playerData: (data: RoomSocketData[]) => void;
 }
 
 export interface RoomManageInterServerEvents {}
@@ -99,6 +105,8 @@ export const Question = z.union([
   })
 ]);
 
+export type RoomState = "lobby" | "started" | "finished";
+
 export interface Room {
   /**
    * Unique identity
@@ -119,7 +127,7 @@ export interface Room {
   /**
    * If the game has started yet
    */
-  state: "lobby" | "started" | "finished";
+  state: RoomState;
 }
 
 export interface ClientKnownRoom {
