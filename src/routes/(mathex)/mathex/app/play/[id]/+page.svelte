@@ -7,6 +7,7 @@
     type State,
     Question
   } from "$lib/mathex/schemas";
+  import { msToMinutesAndSeconds } from "$lib/utils";
 
   import Identicon from "$lib/components/Identicon.svelte";
   import { Input } from "$lib/components/ui/input";
@@ -61,8 +62,19 @@
     content: "<p>Loading...</p>",
     type: "text"
   };
-  socket.on("gameStart", () => (state = "started"));
-  socket.on("gameFinish", () => (state = "finished"));
+  let startingTime: number | null = null;
+  let timePassed = 0;
+  setInterval(() => {
+    if (!startingTime) timePassed = 0;
+    else timePassed = Date.now() - startingTime;
+  }, 100);
+  socket.on("gameStart", () => {
+    state = "started";
+    startingTime = Date.now();
+  });
+  socket.on("gameFinish", () => {
+    state = "finished";
+  });
   socket.on("confetti", () => (confetti = true));
   socket.on("newQuestion", (content, type) => {
     currentQuestion = {
@@ -107,6 +119,9 @@
     >Waiting for game to start...</span
   >
 {:else if state === "started"}
+  <div class="p-3 bg-white text-slate-900 rounded mb-2 flex items-center">
+    <div class="text-3xl text-center">{msToMinutesAndSeconds(timePassed)}</div>
+  </div>
   {#if running}
     <div class="p-3 bg-white text-slate-900 rounded">
       <Header size="h2">Running...</Header>
@@ -117,7 +132,7 @@
     </div>
   {:else}
     <div class="p-3 bg-white text-slate-900 rounded">
-      <Header size="h2">Question {currentQuestion.number}</Header>
+      <Header size="h2">Question {currentQuestion.number} / {questionCount}</Header>
       <div class="prose prose-slate">{@html currentQuestion.content}</div>
       {#if currentQuestion.type === "number"}
         <NumberAnswer bind:answer />

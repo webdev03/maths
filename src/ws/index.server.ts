@@ -168,7 +168,6 @@ export const createWSServer = (base: ServerInstance) => {
       socket.emit("running");
       const isCorrect = checkSolution(answer, currentQuestion);
       setTimeout(async () => {
-        socket.emit("stopRunning");
         if (isCorrect) {
           socket.emit("alert", "success", "Correct!");
           if (socket.data.currentQuestion >= room.questions.length) {
@@ -186,6 +185,7 @@ export const createWSServer = (base: ServerInstance) => {
         } else {
           socket.emit("alert", "error", "Wrong!");
         }
+        socket.emit("stopRunning");
       }, 16 * 1000);
     });
     setTimeout(async () => io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp)));
