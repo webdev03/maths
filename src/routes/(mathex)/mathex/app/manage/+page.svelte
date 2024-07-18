@@ -64,8 +64,12 @@
             : 'bg-inherit'}"
         >
           <Identicon className="inline w-16 h-16" seed={player.name || "Choosing..."} />
-          <span>{player.name || "Choosing..."}</span>
-          {#if currentState === "started"}
+          {#if player.name}
+            <span>{player.name}</span>
+          {:else}
+            <span class="italic">Choosing...</span>
+          {/if}
+          {#if currentState === "started" && !player.finishingTime}
             <span>Question {player.currentQuestion}</span>
           {/if}
         </div>

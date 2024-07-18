@@ -80,6 +80,8 @@
     });
   });
   socket.on("stopRunning", () => (running = false));
+  let questionCount = 1;
+  socket.on("questionCount", (data) => (questionCount = data));
 </script>
 
 {#if state === "connecting"}
@@ -136,9 +138,14 @@
       >
     </div>
   {/if}
+{:else if state === "finished"}
+  <div class="rounded p-2 bg-white text-slate-900">
+    <Header size="h1">Game finished!</Header>
+    <p>The host may communicate more information to you via alerts.</p>
+  </div>
 {/if}
 {#if confetti}
   <div class="fixed top-[-50px] left-0 h-screen w-screen flex justify-center overflow-hidden pointer-events-none">
-    <Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} infinite duration={4000} amount={250} fallDistance="100vh" />
+    <Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} infinite duration={4000} amount={400} fallDistance="100vh" />
   </div>
 {/if}

@@ -97,11 +97,12 @@ export const createWSServer = (base: ServerInstance) => {
     });
     socket.on("start", async () => {
       room.state = "started";
-      roomNamespace.emit("gameStart");
       roomNamespace.emit("alert", "info", "Game has started!");
       const firstQuestion = room.questions[0];
-      roomNamespace.emit("newQuestion", firstQuestion.data.contents, firstQuestion.type);
       for (const playerSocket of await roomNamespace.fetchSockets()) {
+        if (!playerSocket.data.name) return;
+        playerSocket.emit("gameStart");
+        playerSocket.emit("newQuestion", firstQuestion.data.contents, firstQuestion.type);
         playerSocket.data.startingTime = Date.now();
       }
       roomManageNamespace.emit("state", room.state);
@@ -150,6 +151,7 @@ export const createWSServer = (base: ServerInstance) => {
       }
       socket.data.name = name;
       io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp));
+      socket.emit("questionCount", room.questions.length);
       if (room.state === "lobby") {
         socket.emit("lobby");
       } else if (room.state === "started") {
@@ -174,6 +176,7 @@ export const createWSServer = (base: ServerInstance) => {
             socket.emit("alert", "success", "You have completed the questions!");
             socket.emit("gameFinish");
             socket.emit("confetti");
+            roomManageNamespace.emit("alert", "info", `${socket.data.name} has finished all questions!`);
           } else {
             socket.data.currentQuestion++;
             const nextQuestion = room.questions[socket.data.currentQuestion - 1];
@@ -185,6 +188,7 @@ export const createWSServer = (base: ServerInstance) => {
         }
       }, 16 * 1000);
     });
+    setTimeout(async () => io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp)));
   });
 
   async function getPlayers(

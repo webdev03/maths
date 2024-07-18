@@ -17,6 +17,7 @@ export interface RoomServerToClientEvents {
   stopRunning: () => void;
   newQuestion: (question: string, questionType: z.infer<typeof Question>["type"]) => void;
   confetti: () => void;
+  questionCount: (data: number) => void;
 }
 
 export interface RoomClientToServerEvents {
