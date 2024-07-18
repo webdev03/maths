@@ -6,6 +6,8 @@
   import { Label } from "$lib/components/ui/label";
   import { toast } from "svelte-sonner";
 
+  import MoveLeft from "lucide-svelte/icons/move-left";
+
   import {
     Question,
     RoomName,
@@ -64,4 +66,5 @@
       <Button on:click={createRoom}>Create Room</Button>
     </div>
   </div>
+  <Button variant="link" class="text-white" href="/mathex/app"><MoveLeft class="mr-1" /> Back to home</Button>
 </div>
