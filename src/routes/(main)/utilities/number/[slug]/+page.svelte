@@ -47,9 +47,9 @@
             currentFactorTimes++;
           } else {
             if (currentFactorTimes === 1) {
-              str += `${currentFactor} \\times`;
+              str += `{${currentFactor}} \\times`;
             } else {
-              str += `${currentFactor}^${currentFactorTimes} \\times`;
+              str += `{${currentFactor}}^{${currentFactorTimes}} \\times`;
             }
             currentFactor = factors[i];
             currentFactorTimes = 1;

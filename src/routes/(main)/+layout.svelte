@@ -10,6 +10,10 @@
 
   const links: LinkBarItem[] = [
     {
+      url: "/utilities/number",
+      text: "Numbers"
+    },
+    {
       url: "/games",
       text: "Games"
     },

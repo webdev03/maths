@@ -30,4 +30,5 @@
     />
     <Button type="submit">Search</Button>
   </form>
+  <p class="mt-4">Search for a number and get fun facts about it!</p>
 </div>
