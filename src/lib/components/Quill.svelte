@@ -11,6 +11,8 @@
       ...options
     });
 
+    quill.clipboard.dangerouslyPasteHTML(html);
+
     quill.on("text-change", function () {
       html = quill.getSemanticHTML();
     });

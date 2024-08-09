@@ -77,6 +77,7 @@
   });
   socket.on("confetti", () => (confetti = true));
   socket.on("newQuestion", (content, type) => {
+    answer = null;
     currentQuestion = {
       number: currentQuestion.number + 1,
       content: DOMPurify.sanitize(content),
@@ -156,7 +157,7 @@
 {:else if state === "finished"}
   <div class="rounded p-2 bg-white text-slate-900">
     <Header size="h1">Game finished!</Header>
-    <p>The host may communicate more information to you via alerts.</p>
+    <p>The host may communicate more information to you via alerts. They will appear at the bottom right.</p>
   </div>
 {/if}
 {#if confetti}
