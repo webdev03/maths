@@ -150,6 +150,8 @@
             return;
           }
           socket.emit("answer", answer);
+          document.getElementById(this.id).style.setAttribute("disabled", "");
+          setTimeout( { document.getElementById(this.id).style.removeAttribute("disabled"); } , 16000);
         }}>Submit</Button
       >
     </div>
