@@ -19,7 +19,6 @@ import {
   type RoomManageInterServerEvents,
   type RoomManageSocketData,
   type Room,
-  type ClientKnownRoom,
   RoomName,
   Question
 } from "$lib/mathex/schemas";
@@ -140,7 +139,8 @@ export const createWSServer = (base: ServerInstance) => {
       currentQuestion: 1,
       startingTime: null,
       finishingTime: null,
-      name: null
+      name: null,
+      isRunning: false
     };
     socket.on("join", async (name) => {
       if (!name || name.length > 20) return;
@@ -164,7 +164,16 @@ export const createWSServer = (base: ServerInstance) => {
       }
     });
     socket.on("answer", (answer) => {
+      // The player is already running
+      // Someone spammed the Submit button to bypass questions
+      // Thanks @BBI-Dev (on GitHub) for reporting this
+      if (socket.data.isRunning) {
+        io.of(`/manage-${room.id}`).emit("alert", "warning", `${socket.data.name} attempted to spam-click an answer!`);
+        return;
+      };
+
       const currentQuestion = room.questions[socket.data.currentQuestion - 1];
+      socket.data.isRunning = true;
       socket.emit("running");
       const isCorrect = checkSolution(answer, currentQuestion);
       setTimeout(async () => {
@@ -186,6 +195,7 @@ export const createWSServer = (base: ServerInstance) => {
           socket.emit("alert", "error", "Wrong!");
         }
         socket.emit("stopRunning");
+        socket.data.isRunning = false;
       }, 16 * 1000);
     });
     setTimeout(async () => io.of(`/manage-${room.id}`).emit("playerData", await getPlayers(socket.nsp)));

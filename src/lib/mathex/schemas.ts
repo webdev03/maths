@@ -44,6 +44,10 @@ export interface RoomSocketData {
    * The time in Unix milliseconds when the player finished, or null
    */
   finishingTime: number | null;
+  /**
+   * Whether the player is currently waiting for a question to be marked
+   */
+  isRunning: boolean;
 }
 
 export interface RoomCreateClientToServerEvents {
