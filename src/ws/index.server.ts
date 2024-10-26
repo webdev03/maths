@@ -170,7 +170,7 @@ export const createWSServer = (base: ServerInstance) => {
       if (socket.data.isRunning) {
         io.of(`/manage-${room.id}`).emit("alert", "warning", `${socket.data.name} attempted to spam-click an answer!`);
         return;
-      };
+      }
 
       const currentQuestion = room.questions[socket.data.currentQuestion - 1];
       socket.data.isRunning = true;

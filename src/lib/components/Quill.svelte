@@ -1,4 +1,11 @@
 <script lang="ts">
+  import { Textarea } from "$lib/components/ui/textarea";
+  export let html = "";
+</script>
+
+<Textarea bind:value={html} contenteditable="true" placeholder="Enter text here. This supports HTML input." />
+
+<!-- <script lang="ts">
   import "quill/dist/quill.snow.css";
   import Quill, { type QuillOptions } from "quill";
   import { onMount } from "svelte";
@@ -20,3 +27,4 @@
 </script>
 
 <div bind:this={node}></div>
+ -->
