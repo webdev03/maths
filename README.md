@@ -2,7 +2,7 @@
 
 This is a website that contains resources about maths. It uses Bun and SvelteKit. You can try it [here](https://maths.devarsh.me).
 
-**Thanks to Hack Club Nest and Arcade for supporting this project!**
+**Thanks to Hack Club Summer of Making and Arcade for supporting this project!** (Nest was previously used for hosting)
 
 ## How to develop
 
