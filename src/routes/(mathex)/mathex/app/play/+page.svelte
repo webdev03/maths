@@ -57,7 +57,7 @@
       <input
         type="text"
         id="code-input{i}"
-        class="w-12 h-12 block rounded-sm text-slate-900 text-xl text-center"
+        class="w-12 h-12 bg-gray-100 block rounded-sm text-slate-900 text-xl text-center"
         autofocus={i === 0}
         bind:value={letter}
         on:keydown={async (e) => {

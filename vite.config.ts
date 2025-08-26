@@ -1,4 +1,5 @@
 import { sveltekit } from "@sveltejs/kit/vite";
+import tailwindcss from "@tailwindcss/vite";
 import { type ViteDevServer, defineConfig } from "vite";
 import { createWSServer } from "./src/ws/index.server";
 
@@ -11,5 +12,5 @@ const webSocketServer = {
 };
 
 export default defineConfig({
-  plugins: [sveltekit(), webSocketServer]
+  plugins: [sveltekit(), tailwindcss(), webSocketServer]
 });

@@ -21,7 +21,7 @@ import {
   type Room,
   RoomName,
   Question
-} from "$lib/mathex/schemas";
+} from "../lib/mathex/schemas";
 
 import { z } from "zod";
 
@@ -230,7 +230,7 @@ function checkSolution(guess: any, question: z.infer<typeof Question>) {
   } else if (question.type === "expression") {
     for (const solution of question.data.solutions) {
       try {
-        if (math.symbolicEqual(solution, String(guess))) return true;
+        if (math.symbolicEqual(math.parse(solution), math.parse(String(guess)))) return true;
       } catch {}
     }
     return false;

@@ -155,14 +155,14 @@
   ];
 </script>
 
-<div class="flex flex-col items-center py-20 bg-gradient-to-bl from-emerald-300 to-indigo-600 w-full">
+<div class="flex flex-col items-center py-20 bg-linear-to-bl from-emerald-300 to-indigo-600 w-full">
   <span class="text-6xl text-center font-bold">{data.n}</span>
 </div>
 <div class="p-2 mt-4 w-full grid grid-cols-3 gap-4">
   {#each properties as property}
     <div class="p-2 rounded flex flex-col bg-emerald-300">
       <span class="font-semibold">{@html property.header}</span>
-      <p class="max-h-32 overflow-scroll">{@html property.fn(data.n)}</p>
+      <p class="max-h-32 overflow-auto">{@html property.fn(data.n)}</p>
     </div>
   {/each}
 </div>
