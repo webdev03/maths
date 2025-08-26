@@ -143,7 +143,7 @@
         let current = n;
         let steps = 0;
         while (true) {
-          if (current === 1) return steps;
+          if (current === 1) return steps.toString();
           if (current % 2 === 0) current = current / 2;
           else current = 3 * current + 1;
 
