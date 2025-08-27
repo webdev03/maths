@@ -1,5 +1,7 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `let confetti = false;` to `$state` because there's a variable named state.
+     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { io, type Socket } from "socket.io-client";
   import {
     type RoomServerToClientEvents,
@@ -19,14 +21,14 @@
   import TextAnswer from "$lib/mathex/answers/TextAnswer.svelte";
   import ExpressionAnswer from "$lib/mathex/answers/ExpressionAnswer.svelte";
 
-  import LoaderCircle from "lucide-svelte/icons/loader-circle";
+  import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 
   import { Confetti } from "svelte-confetti";
   let confetti = false;
 
   import DOMPurify from "dompurify";
 
-  const roomId = $page.params.id;
+  const roomId = page.params.id;
 
   let state: State = "connecting";
 
@@ -112,7 +114,7 @@
         <span class="w-full h-16 text-2xl text-center flex justify-center items-center">?</span>
       {/if}
       <Input bind:value={name} type="text" placeholder="Name" class="w-64" maxlength={20} />
-      <Button class="mt-2" on:click={() => socket.emit("join", name)}>Join</Button>
+      <Button class="mt-2" onclick={() => socket.emit("join", name)}>Join</Button>
     </div>
   </div>
 {:else if state === "waiting_start"}
@@ -144,7 +146,7 @@
       {/if}
       <Button
         class="mt-2"
-        on:click={() => {
+        onclick={() => {
           if (!answer) {
             toast.error("Answer is null!");
             return;

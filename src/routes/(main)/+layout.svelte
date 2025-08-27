@@ -1,7 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { Toaster } from "$lib/components/ui/sonner";
   import "../../app.css";
+  interface Props {
+    children?: import("svelte").Snippet;
+  }
+
+  let { children }: Props = $props();
 
   interface LinkBarItem {
     url: string;
@@ -38,8 +43,8 @@
           <li>
             <a
               href={link.url}
-              aria-current={$page.url.pathname.startsWith(link.url) ? "page" : undefined}
-              class={`py-2 px-3 rounded hover:bg-gray-200 transition-all ${$page.url.pathname.startsWith(link.url) ? "text-blue-600" : ""}`}
+              aria-current={page.url.pathname.startsWith(link.url) ? "page" : undefined}
+              class={`py-2 px-3 rounded hover:bg-gray-200 transition-all ${page.url.pathname.startsWith(link.url) ? "text-blue-600" : ""}`}
               >{link.text}</a
             >
           </li>
@@ -48,4 +53,4 @@
     </div>
   </div>
 </nav>
-<slot />
+{@render children?.()}

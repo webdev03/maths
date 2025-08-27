@@ -2,6 +2,11 @@
   import { Toaster } from "$lib/components/ui/sonner";
   import "../../../../app.css";
   import "quill/dist/quill.snow.css";
+  interface Props {
+    children?: import("svelte").Snippet;
+  }
+
+  let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -9,5 +14,5 @@
 </svelte:head>
 <Toaster />
 <div class="bg-blue-400 text-white p-3 min-h-screen h-screen w-full">
-  <slot />
+  {@render children?.()}
 </div>

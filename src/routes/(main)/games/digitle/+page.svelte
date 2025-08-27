@@ -17,19 +17,21 @@
 
   type Board = Item[][];
 
-  let guess = "";
+  let guess = $state("");
   let guesses = 0;
 
-  let board: Board = Array(6)
-    .fill(null)
-    .map(() =>
-      Array(5)
-        .fill(null)
-        .map(() => ({
-          type: "empty",
-          content: null
-        }))
-    );
+  let board: Board = $state(
+    Array(6)
+      .fill(null)
+      .map(() =>
+        Array(5)
+          .fill(null)
+          .map(() => ({
+            type: "empty",
+            content: null
+          }))
+      )
+  );
 
   const target = Math.floor(Math.random() * 100000)
     .toString()
@@ -96,7 +98,7 @@
   </p>
   <p>If you have any suggestions, you can give us feedback on our GitHub repository by creating an issue.</p>
 
-  <div class="w-min">
+  <div class="w-min mt-3">
     <div class="flex flex-col">
       {#each board as row}
         <div class="flex flex-row">
@@ -112,19 +114,19 @@
     </div>
     <div class="flex">
       <Input
-        type="number"
+        type="string"
         class="mr-2"
         bind:value={guess}
-        on:keypress={(e) => {
+        onkeypress={(e) => {
           if (e.key === "Enter") {
             submit();
           } else if (e.currentTarget.value.length > 4 || !"0123456789".split("").includes(e.key)) {
             e.preventDefault();
           }
         }}
-        on:paste={(e) => e.preventDefault()}
+        onpaste={(e) => e.preventDefault()}
       />
-      <Button on:click={submit}>Guess</Button>
+      <Button onclick={submit}>Guess</Button>
     </div>
   </div>
 </div>

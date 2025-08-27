@@ -1,6 +1,4 @@
-import * as katex from "katex";
-// @ts-ignore
-const { renderToString } = katex.default;
+import { renderToString } from "katex";
 
 export default (commands: string) =>
   renderToString(commands, {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
 
   import { io, type Socket } from "socket.io-client";
   import {
@@ -15,8 +15,8 @@
   import * as Select from "$lib/components/ui/select";
   import Identicon from "$lib/components/Identicon.svelte";
 
-  const roomId = $page.url.searchParams.get("id");
-  const runToken = $page.url.searchParams.get("runToken");
+  const roomId = page.url.searchParams.get("id");
+  const runToken = page.url.searchParams.get("runToken");
 
   import { toast } from "svelte-sonner";
 
@@ -35,19 +35,19 @@
   });
   socket.on("connect_error", () => toast.error("Failed to connect!"));
   socket.on("disconnect", () => toast.warning("Disconnected!"));
-  let players: RoomSocketData[] = [];
+  let players: RoomSocketData[] = $state([]);
   socket.on("playerData", (data) => (players = data));
-  let currentState: RoomState = "lobby";
+  let currentState: RoomState = $state("lobby");
 
-  import type { ToastT } from "svelte-sonner";
-  let alertType: ToastT["type"] | null = null;
-  let alertText = "";
+  let alertTypes = ["normal", "action", "success", "info", "warning", "error", "loading", "default"] as const;
+  let alertType: (typeof alertTypes)[number] | undefined = $state(undefined);
+  let alertText = $state("");
 </script>
 
 <div class="flex flex-col w-full h-full p-2 gap-y-2">
   <div class="p-6 px-24 rounded text-slate-900 bg-white flex justify-center items-center text-center">
     <div class="flex-row text-xl">
-      Join at <span class="font-bold">{$page.url.host}/mathex/app/play</span> with code:
+      Join at <span class="font-bold">{page.url.host}/mathex/app/play</span> with code:
     </div>
     <div class="w-full text-8xl font-bold">{roomId}</div>
   </div>
@@ -81,28 +81,21 @@
   <div class="p-3 rounded text-slate-900 bg-white">
     <Header size="h2">Alerts</Header>
     <div class="flex w-full">
-      <Select.Root
-        onSelectedChange={(selection) => {
-          // @ts-ignore
-          if (selection?.value) alertType = selection.value;
-        }}
-      >
+      <Select.Root type="single" bind:value={alertType}>
         <Select.Trigger class="w-[180px]">
-          <Select.Value placeholder="Alert Type" />
+          {alertType ? alertType.charAt(0).toUpperCase() + alertType.substring(1).toLowerCase() : "Alert Type"}
         </Select.Trigger>
         <Select.Content>
-          <Select.Item value="success">Success</Select.Item>
-          <Select.Item value="info">Info</Select.Item>
-          <Select.Item value="warning">Warning</Select.Item>
-          <Select.Item value="error">Error</Select.Item>
-          <Select.Item value="loading">Loading</Select.Item>
+          {#each alertTypes as type}
+            <Select.Item value={type}>{type.charAt(0).toUpperCase() + type.substring(1).toLowerCase()}</Select.Item>
+          {/each}
         </Select.Content>
       </Select.Root>
       <Input bind:value={alertText} class="ml-2" placeholder="Alert Text" />
       <Button
         class="ml-2"
-        on:click={() => {
-          if (alertType === null) {
+        onclick={() => {
+          if (alertType === undefined) {
             toast.error("Choose an alert type!");
             return;
           }
@@ -118,7 +111,7 @@
   </div>
   {#if currentState !== "finished"}
     <Button
-      on:click={() => {
+      onclick={() => {
         if (currentState === "lobby") {
           socket.emit("start");
           currentState = "started";

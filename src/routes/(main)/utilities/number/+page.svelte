@@ -4,7 +4,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Header } from "$lib/components/ui/header";
 
-  let query = "";
+  let query = $state("");
   async function submit() {
     if (isNaN(Number(query))) return;
     requestAnimationFrame(() => goto(`/utilities/number/${query}`));
@@ -13,17 +13,17 @@
 
 <div class="flex flex-col justify-center items-center">
   <Header size="h1">Number Search</Header>
-  <form on:submit={submit} class="p-2 flex justify-center max-w-sm items-center space-x-2">
+  <form onsubmit={submit} class="p-2 flex justify-center max-w-sm items-center space-x-2">
     <Input
       bind:value={query}
-      on:keypress={(e) => {
+      onkeypress={(e) => {
         if (e.key === "Enter") {
           submit();
         } else if (!"0123456789".split("").includes(e.key)) {
           e.preventDefault();
         }
       }}
-      on:paste={(e) => e.preventDefault()}
+      onpaste={(e) => e.preventDefault()}
       type="search"
       placeholder="Search for a number"
       class="w-64"

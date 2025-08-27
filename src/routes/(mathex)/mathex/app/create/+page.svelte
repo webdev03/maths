@@ -1,12 +1,11 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
-  import { FileInput } from "$lib/components/ui/file-input";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { toast } from "svelte-sonner";
 
-  import MoveLeft from "lucide-svelte/icons/move-left";
+  import MoveLeft from "@lucide/svelte/icons/move-left";
 
   import {
     Question,
@@ -20,8 +19,8 @@
   import { goto } from "$app/navigation";
   const socket: Socket<RoomCreateServerToClientEvents, RoomCreateClientToServerEvents> = io("/rooms");
 
-  let files: FileList | undefined;
-  let roomName = "";
+  let files: FileList | undefined = $state();
+  let roomName = $state("");
 
   async function createRoom() {
     if (!files) {
@@ -57,13 +56,13 @@
     <div class="bg-white text-slate-900 p-2 rounded shadow w-64 min-h-32 *:w-full *:my-1">
       <div class="flex w-full max-w-sm flex-col gap-1.5">
         <Label for="email">Question Set</Label>
-        <FileInput accept="application/json" bind:files />
+        <Input type="file" accept="application/json" bind:files />
       </div>
       <div class="flex w-full max-w-sm flex-col gap-1.5">
         <Label for="email">Room Name</Label>
-        <Input accept="application/json" bind:value={roomName} />
+        <Input bind:value={roomName} />
       </div>
-      <Button on:click={createRoom}>Create Room</Button>
+      <Button onclick={createRoom}>Create Room</Button>
     </div>
   </div>
   <Button variant="link" class="text-white" href="/mathex/app"><MoveLeft class="mr-1" /> Back to home</Button>

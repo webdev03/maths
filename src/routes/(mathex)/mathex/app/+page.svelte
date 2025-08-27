@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
-  import MoveLeft from "lucide-svelte/icons/move-left";
+  import MoveLeft from "@lucide/svelte/icons/move-left";
 </script>
 
 <div class="flex flex-col h-full w-full justify-center items-center">

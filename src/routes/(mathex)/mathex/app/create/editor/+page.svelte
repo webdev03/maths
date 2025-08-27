@@ -8,12 +8,12 @@
   import NumberEditor from "$lib/mathex/editors/NumberEditor.svelte";
   import TextEditor from "$lib/mathex/editors/TextEditor.svelte";
   import ExpressionEditor from "$lib/mathex/editors/ExpressionEditor.svelte";
-  import MoveRight from "lucide-svelte/icons/move-right";
-  import X from "lucide-svelte/icons/x";
+  import MoveRight from "@lucide/svelte/icons/move-right";
+  import X from "@lucide/svelte/icons/x";
 
-  let questions: z.infer<typeof Question>[] = [];
-  let currentQuestionIdx = 0;
-  $: currentQuestion = questions[currentQuestionIdx];
+  let questions: z.infer<typeof Question>[] = $state([]);
+  let currentQuestionIdx = $state(0);
+  let currentQuestion = $derived(questions[currentQuestionIdx]);
 
   // Ask if you want to leave
   window.addEventListener("beforeunload", (e) => {
@@ -103,8 +103,8 @@
       <Menubar.Content>
         <Menubar.Item>Clear Set</Menubar.Item>
         <Menubar.Separator />
-        <Menubar.Item on:click={upload}>Import JSON</Menubar.Item>
-        <Menubar.Item on:click={download}>Export JSON</Menubar.Item>
+        <Menubar.Item onclick={upload}>Import JSON</Menubar.Item>
+        <Menubar.Item onclick={download}>Export JSON</Menubar.Item>
       </Menubar.Content>
     </Menubar.Menu>
     <Menubar.Menu>
@@ -113,9 +113,9 @@
         <Menubar.Sub>
           <Menubar.SubTrigger>New Question</Menubar.SubTrigger>
           <Menubar.SubContent>
-            <Menubar.Item on:click={() => newQuestion("number")}>Number</Menubar.Item>
-            <Menubar.Item on:click={() => newQuestion("text")}>Text</Menubar.Item>
-            <Menubar.Item on:click={() => newQuestion("expression")}>Expression</Menubar.Item>
+            <Menubar.Item onclick={() => newQuestion("number")}>Number</Menubar.Item>
+            <Menubar.Item onclick={() => newQuestion("text")}>Text</Menubar.Item>
+            <Menubar.Item onclick={() => newQuestion("expression")}>Expression</Menubar.Item>
           </Menubar.SubContent>
         </Menubar.Sub>
       </Menubar.Content>
@@ -125,7 +125,7 @@
     <div class="bg-white text-slate-900 p-2 w-[80%] h-full rounded-md mr-1">
       {#if questions.length > 0}
         <Header size="h2">Question {currentQuestionIdx + 1}</Header>
-        <div class="mt-2" />
+        <div class="mt-2"></div>
         {#if currentQuestion.type === "number"}
           <NumberEditor question={currentQuestion.data} />
         {:else if currentQuestion.type === "text"}
@@ -146,14 +146,14 @@
         <Button
           variant="ghost"
           class="w-full flex group"
-          on:click={() => {
+          onclick={() => {
             currentQuestionIdx = i;
             questions = questions;
           }}
         >
           <span>Question {i + 1}</span>
           <div class="flex flex-1"></div>
-          <button on:click={() => removeQuestion(i)}>
+          <button onclick={() => removeQuestion(i)}>
             <X class="invisible flex flex-1 text-right transition-all group-hover:visible" />
           </button>
         </Button>

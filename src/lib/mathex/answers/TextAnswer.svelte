@@ -1,6 +1,10 @@
 <script lang="ts">
   import { Input } from "$lib/components/ui/input";
-  export let answer: any;
+  interface Props {
+    answer: any;
+  }
+
+  let { answer = $bindable() }: Props = $props();
 </script>
 
 <Input type="text" bind:value={answer} placeholder="Type your answer here" />

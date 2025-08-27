@@ -8,10 +8,14 @@
   import { z } from "zod";
   import type { ExpressionQuestion } from "../schemas";
 
-  import Plus from "lucide-svelte/icons/plus";
-  import Minus from "lucide-svelte/icons/minus";
+  import Plus from "@lucide/svelte/icons/plus";
+  import Minus from "@lucide/svelte/icons/minus";
 
-  export let question: z.infer<typeof ExpressionQuestion> | null;
+  interface Props {
+    question: z.infer<typeof ExpressionQuestion> | null;
+  }
+
+  let { question = $bindable() }: Props = $props();
   if (question === null)
     question = {
       contents: "",
@@ -26,17 +30,17 @@
 </div>
 <div class="mt-2 grid gap-1.5">
   <Label>Solutions (should be parsable by mathjs)</Label>
-  {#each question.solutions as solution, i}
+  {#each question.solutions as _solution, i}
     <div class="flex gap-2">
-      <Input type="text" bind:value={solution} /><Button
-        on:click={() => {
+      <Input type="text" bind:value={question.solutions[i]} /><Button
+        onclick={() => {
           question.solutions = question.solutions.toSpliced(i, 1);
         }}><Minus class="mr-1" />Remove</Button
       >
     </div>
   {/each}
   <Button
-    on:click={() => {
+    onclick={() => {
       question.solutions = [...question.solutions, ""];
     }}
     class="w-48"><Plus class="mr-1" />Add solution</Button

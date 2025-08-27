@@ -1,10 +1,14 @@
 <script lang="ts">
   import { minidenticon } from "minidenticons";
 
-  export let className: string;
-  export let seed: string;
+  interface Props {
+    className: string;
+    seed: string;
+  }
 
-  $: svg = minidenticon(seed);
+  let { className, seed }: Props = $props();
+
+  let svg = $derived(minidenticon(seed));
 </script>
 
 <div class={className}>{@html svg}</div>

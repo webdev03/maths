@@ -1,6 +1,10 @@
 <script lang="ts">
   import { Textarea } from "$lib/components/ui/textarea";
-  export let html = "";
+  interface Props {
+    html?: string;
+  }
+
+  let { html = $bindable("") }: Props = $props();
 </script>
 
 <Textarea bind:value={html} contenteditable="true" placeholder="Enter text here. This supports HTML input." />

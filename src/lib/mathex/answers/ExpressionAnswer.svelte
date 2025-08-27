@@ -1,6 +1,10 @@
 <script lang="ts">
   import { Input } from "$lib/components/ui/input";
-  export let answer: any;
+  interface Props {
+    answer: any;
+  }
+
+  let { answer = $bindable() }: Props = $props();
 </script>
 
 <!-- TODO: Add MathQuill or similar fancy editor -->

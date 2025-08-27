@@ -2,7 +2,11 @@
   import type { PageData } from "./$types";
   import latex from "$lib/latex";
 
-  export let data: PageData;
+  interface Props {
+    data: PageData;
+  }
+
+  let { data }: Props = $props();
 
   interface Property {
     header: string;

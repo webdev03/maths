@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
-  import MoveLeft from "lucide-svelte/icons/move-left";
+  import MoveLeft from "@lucide/svelte/icons/move-left";
   import { toast } from "svelte-sonner";
 
   import { goto } from "$app/navigation";
@@ -10,7 +10,7 @@
   import type { RoomCreateClientToServerEvents, RoomCreateServerToClientEvents } from "$lib/mathex/schemas";
   const socket: Socket<RoomCreateServerToClientEvents, RoomCreateClientToServerEvents> = io("/rooms");
 
-  let code: string[] = Array.from({ length: 8 }).map(() => "");
+  let code: string[] = $state(Array.from({ length: 8 }).map(() => ""));
   let lastCode: string = "";
   async function checkLetter(i: number) {
     code[i] = code[i].trim();
@@ -53,18 +53,18 @@
   <Header size="h1">Join Room</Header>
   <div class="flex gap-1 mt-2">
     {#each code as letter, i}
-      <!-- svelte-ignore a11y-autofocus -->
+      <!-- svelte-ignore a11y_autofocus -->
       <input
         type="text"
         id="code-input{i}"
         class="w-12 h-12 bg-gray-100 block rounded-sm text-slate-900 text-xl text-center"
         autofocus={i === 0}
-        bind:value={letter}
-        on:keydown={async (e) => {
+        bind:value={code[i]}
+        onkeydown={async (e) => {
           const prevEl = document.getElementById("code-input" + (i - 1));
           if (prevEl && letter === "" && e.key === "Backspace") prevEl.focus();
         }}
-        on:input={() => checkLetter(i)}
+        oninput={() => checkLetter(i)}
       />
     {/each}
   </div>
