@@ -1,7 +1,11 @@
 <script lang="ts">
+  import "../../app.css";
+
   import { page } from "$app/state";
   import { Toaster } from "$lib/components/ui/sonner";
-  import "../../app.css";
+
+  import { Github } from "@lucide/svelte/icons";
+
   interface Props {
     children?: import("svelte").Snippet;
   }
@@ -49,6 +53,10 @@
             >
           </li>
         {/each}
+
+        <a class="px-3" href="https://github.com/webdev03/maths" target="_blank">
+          <Github />
+        </a>
       </ul>
     </div>
   </div>
