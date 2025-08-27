@@ -3,7 +3,7 @@
 FROM oven/bun:1-debian AS base
 WORKDIR /usr/src/app
 
-# For Coolify healthchecks
+# for Coolify healthchecks
 RUN apt-get update && apt-get install -y curl \
   && rm -rf /var/lib/apt/lists/*
 
