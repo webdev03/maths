@@ -168,7 +168,7 @@ export const createWSServer = (base: ServerInstance) => {
       // Someone spammed the Submit button to bypass questions
       // Thanks @BBI-Dev (on GitHub) for reporting this
       if (socket.data.isRunning) {
-        io.of(`/manage-${room.id}`).emit("alert", "warning", `${socket.data.name} attempted to spam-click an answer!`);
+        // io.of(`/manage-${room.id}`).emit("alert", "warning", `${socket.data.name} attempted to spam-click an answer!`);
         return;
       }
 
