@@ -1,8 +1,9 @@
 <script lang="ts">
   import { z } from "zod";
-  import { Button } from "$lib/components/ui/button";
+  import { Button, buttonVariants } from "$lib/components/ui/button";
   import { Header } from "$lib/components/ui/header";
   import * as Menubar from "$lib/components/ui/menubar";
+  import * as AlertDialog from "$lib/components/ui/alert-dialog";
   import { Question } from "$lib/mathex/schemas";
 
   import NumberEditor from "$lib/mathex/editors/NumberEditor.svelte";
@@ -23,6 +24,13 @@
     // Included for legacy support
     e.returnValue = true;
   });
+
+  let clearSetDialogOpen = $state(false);
+  function clearSet() {
+    currentQuestionIdx = 0;
+    questions = [];
+    clearSetDialogOpen = false;
+  }
 
   function download() {
     let element = document.createElement("a");
@@ -96,12 +104,32 @@
   }
 </script>
 
+<!-- Clear Set dialog -->
+<AlertDialog.Root bind:open={clearSetDialogOpen}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+      <AlertDialog.Description>
+        This action cannot be undone. This will permanently delete all questions in this set! <span class="font-bold"
+          >Please make sure you have exported this set if you want to keep it!</span
+        >
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Action class={buttonVariants({ variant: "destructive" })} onclick={clearSet}
+        >Clear</AlertDialog.Action
+      >
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
+
 <div class="flex flex-col h-full">
   <Menubar.Root class="text-slate-900">
     <Menubar.Menu>
       <Menubar.Trigger>File</Menubar.Trigger>
       <Menubar.Content>
-        <Menubar.Item>Clear Set</Menubar.Item>
+        <Menubar.Item onclick={() => (clearSetDialogOpen = true)}>Clear Set</Menubar.Item>
         <Menubar.Separator />
         <Menubar.Item onclick={upload}>Import JSON</Menubar.Item>
         <Menubar.Item onclick={download}>Export JSON</Menubar.Item>
