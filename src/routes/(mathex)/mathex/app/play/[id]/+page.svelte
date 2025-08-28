@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: can't migrate `let confetti = false;` to `$state` because there's a variable named state.
-     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
   import { page } from "$app/state";
   import { io, type Socket } from "socket.io-client";
@@ -24,15 +22,15 @@
   import LoaderCircle from "@lucide/svelte/icons/loader-circle";
 
   import { Confetti } from "svelte-confetti";
-  let confetti = false;
+  let confetti = $state(false);
 
   import DOMPurify from "dompurify";
 
   const roomId = page.params.id;
 
-  let state: State = "connecting";
+  let gameState: State = $state("connecting");
 
-  let name: string = "";
+  let name: string = $state("");
 
   import { toast } from "svelte-sonner";
   import type { z } from "zod";
@@ -43,39 +41,39 @@
     toast[type](message);
   });
   socket.on("connect", () => {
-    if (state === "connecting") state = "choose-name";
+    if (gameState === "connecting") gameState = "choose-name";
     toast.success("Connected!");
   });
   socket.on("connect_error", () => toast.error("Failed to connect! Does this room exist?"));
   socket.on("disconnect", () => toast.warning("Disconnected!"));
 
-  socket.on("lobby", () => (state = "waiting_start"));
+  socket.on("lobby", () => (gameState = "waiting_start"));
 
-  let answer: z.infer<typeof Question>["data"]["solutions"][number] | null = null;
+  let answer: z.infer<typeof Question>["data"]["solutions"][number] | null = $state(null);
 
-  let running: number | false = false;
-  let runningVisible = 0;
+  let running: number | false = $state(false);
+  let runningVisible = $state(0);
   let currentQuestion: {
     number: number;
     content: string;
     type: z.infer<typeof Question>["type"];
-  } = {
+  } = $state({
     number: 0,
     content: "<p>Loading...</p>",
     type: "text"
-  };
+  });
   let startingTime: number | null = null;
-  let timePassed = 0;
+  let timePassed = $state(0);
   setInterval(() => {
     if (!startingTime) timePassed = 0;
     else timePassed = Date.now() - startingTime;
   }, 100);
   socket.on("gameStart", () => {
-    state = "started";
+    gameState = "started";
     startingTime = Date.now();
   });
   socket.on("gameFinish", () => {
-    state = "finished";
+    gameState = "finished";
   });
   socket.on("confetti", () => (confetti = true));
   socket.on("newQuestion", (content, type) => {
@@ -95,15 +93,15 @@
     });
   });
   socket.on("stopRunning", () => (running = false));
-  let questionCount = 1;
+  let questionCount = $state(1);
   socket.on("questionCount", (data) => (questionCount = data));
 </script>
 
-{#if state === "connecting"}
+{#if gameState === "connecting"}
   <span class="animate-pulse font-bold text-5xl flex text-center items-center w-full h-full justify-center"
     >Connecting...</span
   >
-{:else if state === "choose-name"}
+{:else if gameState === "choose-name"}
   <div class="w-full h-full flex justify-center items-center align-middle text-center">
     <div class="flex flex-col rounded bg-white text-slate-900 w-min text-center p-2">
       {#if name}
@@ -117,11 +115,11 @@
       <Button class="mt-2" onclick={() => socket.emit("join", name)}>Join</Button>
     </div>
   </div>
-{:else if state === "waiting_start"}
+{:else if gameState === "waiting_start"}
   <span class="animate-pulse font-bold text-4xl flex text-center items-center w-full h-full justify-center"
     >Waiting for game to start...</span
   >
-{:else if state === "started"}
+{:else if gameState === "started"}
   <div class="p-3 bg-white text-slate-900 rounded mb-2 flex items-center">
     <div class="text-3xl text-center">{msToMinutesAndSeconds(timePassed)}</div>
   </div>
@@ -156,7 +154,7 @@
       >
     </div>
   {/if}
-{:else if state === "finished"}
+{:else if gameState === "finished"}
   <div class="rounded p-2 bg-white text-slate-900">
     <Header size="h1">Game finished!</Header>
     <p>The host may communicate more information to you via alerts. They will appear at the bottom right.</p>
